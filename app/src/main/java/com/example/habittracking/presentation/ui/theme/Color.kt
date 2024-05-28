@@ -22,3 +22,4 @@ val OrangeF6 = Color(0xFFFFF6ED) //FFF6ED
 val RedF6 = Color(0xFFF65B4E) //F65B4E
 val Blue29 = Color(0xFF29319F) //29319F
 val Purple97 = Color(0xFF973456) //973456
+val GrayC8 = Color(0xFFC8C1C8) //C8C1C8
