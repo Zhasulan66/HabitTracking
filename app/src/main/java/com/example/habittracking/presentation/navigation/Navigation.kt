@@ -1,9 +1,14 @@
 package com.example.habittracking.presentation.navigation
 
 import androidx.compose.runtime.Composable
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.navArgument
+import com.example.eduventure.presentation.screens.auth.ChangePasswordScreen
+import com.example.eduventure.presentation.screens.auth.VerifyPasswordScreen
+import com.example.habittracking.presentation.screens.HabitInfoScreen
 import com.example.habittracking.presentation.screens.HomeScreen
 import com.example.habittracking.presentation.screens.NewHabitScreen
 import com.example.habittracking.presentation.screens.ProfileScreen
@@ -13,6 +18,7 @@ import com.example.habittracking.presentation.screens.auth.ForgotPasswordScreen
 import com.example.habittracking.presentation.screens.auth.LoginScreen
 import com.example.habittracking.presentation.screens.auth.OnboardingScreen
 import com.example.habittracking.presentation.screens.auth.RegistrationScreen
+import com.example.habittracking.presentation.screens.auth.VerifyEmailScreen
 
 @Composable
 fun Navigation() {
@@ -53,10 +59,62 @@ fun Navigation() {
             )
         }
 
+        //VerifyEmailScreen
+        composable(route = Screen.VerifyEmailScreen.route + "/{email}",
+            arguments = listOf(
+                navArgument("email"){
+                    type = NavType.StringType
+                    defaultValue = ""
+                    nullable = false
+                }
+            )
+        ) { entry ->
+            VerifyEmailScreen(
+                navController = navController,
+                userEmail = entry.arguments!!.getString("email").toString()
+            )
+        }
+
         //ForgotPasswordScreen
-        composable(route = Screen.ForgotPasswordScreen.route) {
-            ForgotPasswordScreen(
-                navController = navController
+        composable(route = Screen.ForgotPasswordScreen.route){
+            ForgotPasswordScreen(navController = navController)
+        }
+
+        //VerifyPasswordScreen
+        composable(route = Screen.VerifyPasswordScreen.route + "/{email}",
+            arguments = listOf(
+                navArgument("email"){
+                    type = NavType.StringType
+                    defaultValue = ""
+                    nullable = false
+                }
+            )
+        ){ entry ->
+            VerifyPasswordScreen(
+                navController = navController,
+                userEmail = entry.arguments!!.getString("email").toString(),
+            )
+        }
+
+        //ChangePasswordScreen
+        composable(route = Screen.ChangePasswordScreen.route + "/{email}" + "/{code}",
+            arguments = listOf(
+                navArgument("email"){
+                    type = NavType.StringType
+                    defaultValue = ""
+                    nullable = false
+                },
+                navArgument("code"){
+                    type = NavType.StringType
+                    defaultValue = ""
+                    nullable = false
+                }
+            )
+        ){ entry ->
+            ChangePasswordScreen(
+                navController = navController,
+                userEmail = entry.arguments!!.getString("email").toString(),
+                code = entry.arguments!!.getString("code").toString()
             )
         }
 
@@ -84,6 +142,13 @@ fun Navigation() {
         //NewHabitScreen
         composable(route = Screen.NewHabitScreen.route) {
             NewHabitScreen(
+                navController = navController
+            )
+        }
+
+        //HabitInfoScreen
+        composable(route = Screen.HabitInfoScreen.route) {
+            HabitInfoScreen(
                 navController = navController
             )
         }

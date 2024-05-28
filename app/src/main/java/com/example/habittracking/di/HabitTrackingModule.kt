@@ -29,7 +29,7 @@ object HabitTrackingModule {
             .build()
 
         return Retrofit.Builder()
-            .baseUrl("https://some.com/api/")
+            .baseUrl("https://habitappbuilder-2d332885cb47.herokuapp.com/")
             .addConverterFactory(GsonConverterFactory.create())
             .client(client)
             .build()

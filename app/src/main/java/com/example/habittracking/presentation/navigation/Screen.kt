@@ -12,6 +12,11 @@ sealed class Screen(val route: String) {
 
     data object ForgotPasswordScreen: Screen("forgot_password_screen")
 
+    data object VerifyEmailScreen : Screen("verify_email_screen")
+
+    data object VerifyPasswordScreen : Screen("verify_password_screen")
+    data object ChangePasswordScreen : Screen("change_password_screen")
+
     data object HomeScreen: Screen("home_screen")
 
     data object ProfileScreen: Screen("profile_screen")
@@ -19,6 +24,8 @@ sealed class Screen(val route: String) {
     data object SettingScreen: Screen("setting_screen")
 
     data object NewHabitScreen: Screen("new_habit_screen")
+
+    data object HabitInfoScreen: Screen("habit_info_screen")
 
 
 }

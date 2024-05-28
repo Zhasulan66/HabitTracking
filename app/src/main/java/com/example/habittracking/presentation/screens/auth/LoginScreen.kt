@@ -21,6 +21,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -43,20 +44,68 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.example.habittracking.R
 import com.example.habittracking.common.Contacts
 import com.example.habittracking.common.Contacts.Companion.MANROPE_FONT_FAMILY
+import com.example.habittracking.domain.model.Resource
+import com.example.habittracking.domain.model.auth.TokenResponse
+import com.example.habittracking.domain.model.auth.UserLogin
 import com.example.habittracking.presentation.navigation.Screen
+import com.example.habittracking.presentation.screens.ErrorScreen
+import com.example.habittracking.presentation.screens.LoadingScreen
 import com.example.habittracking.presentation.ui.theme.OrangeF6
 import com.example.habittracking.presentation.ui.theme.OrangeFD
 import com.example.habittracking.presentation.ui.theme.OrangeWhite
 import com.example.habittracking.presentation.ui.theme.PurpleDark
+import com.example.habittracking.presentation.viewmodel.MainViewModel
+
+@Composable
+fun LoginScreen(
+    navController: NavController,
+) {
+
+    val viewModel = hiltViewModel<MainViewModel>()
+    val loginState by viewModel.loginState.collectAsState()
+
+    Box(modifier = Modifier
+        .fillMaxSize()){
+
+        when(loginState){
+            is Resource.Initial -> {
+                LoginFields(navController, viewModel)
+            }
+            is Resource.Loading -> {
+                LoadingScreen()
+            }
+            is Resource.Error -> {
+                ErrorScreen(modifier = Modifier, retryAction = {
+                    navController.navigate(route = navController.currentDestination?.route ?: ""){
+                        popUpTo(navController.previousBackStackEntry?.destination?.id ?: return@navigate)
+                    }
+                })
+            }
+            is Resource.Success -> {
+                val tokenResponse = (loginState as Resource.Success<TokenResponse>).data.authToken
+                navController.navigate(Screen.HomeScreen.route){
+                    popUpTo(Screen.LoginScreen.route){ inclusive = true }
+                }
+                viewModel.loginSuccess()
+                viewModel.saveToken(tokenResponse)
+
+            }
+        }
+
+    }
+
+}
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun LoginScreen(
-    navController: NavController
+fun LoginFields(
+    navController: NavController,
+    viewModel: MainViewModel
 ) {
     var userEmail by remember { mutableStateOf("") }
     var userPassword by remember { mutableStateOf("") }
@@ -221,10 +270,16 @@ fun LoginScreen(
                     .clip(RoundedCornerShape(10.dp))
                     .background(OrangeFD)
                     .clickable {
-                        navController.navigate(Screen.HomeScreen.route){
-                            popUpTo(Screen.LoginScreen.route){
-                                inclusive = true
-                            }
+                        isUserEmailIncorrect = userEmail.isEmpty()
+                        isUserPasswordIncorrect = userPassword.isEmpty()
+                        if (!isValidEmail(userEmail)) {
+                            isUserEmailIncorrect = true
+                        }
+                        if (!isPasswordValid(userPassword)) {
+                            isUserPasswordIncorrect = true
+                        }
+                        if (!isUserEmailIncorrect && !isUserPasswordIncorrect) {
+                            viewModel.loginUser(UserLogin(userEmail, userPassword))
                         }
                     },
                 contentAlignment = Alignment.Center

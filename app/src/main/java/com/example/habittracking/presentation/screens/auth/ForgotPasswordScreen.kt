@@ -36,21 +36,25 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.example.habittracking.R
 import com.example.habittracking.common.Contacts
 import com.example.habittracking.common.Contacts.Companion.MANROPE_FONT_FAMILY
+import com.example.habittracking.domain.model.auth.ResetCodeRequest
+import com.example.habittracking.presentation.navigation.Screen
 import com.example.habittracking.presentation.ui.theme.OrangeF6
 import com.example.habittracking.presentation.ui.theme.OrangeFD
 import com.example.habittracking.presentation.ui.theme.OrangeWhite
 import com.example.habittracking.presentation.ui.theme.PurpleDark
+import com.example.habittracking.presentation.viewmodel.MainViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ForgotPasswordScreen(
     navController: NavController
 ){
-
+    val viewModel = hiltViewModel<MainViewModel>()
     var userEmail by remember { mutableStateOf("") }
     var isUserEmailIncorrect by remember { mutableStateOf(false) }
     Column(
@@ -158,7 +162,18 @@ fun ForgotPasswordScreen(
                     .clip(RoundedCornerShape(10.dp))
                     .background(OrangeFD)
                     .clickable {
-
+                        isUserEmailIncorrect = userEmail.isEmpty()
+                        if (!isValidEmail(userEmail)) {
+                            isUserEmailIncorrect = true
+                        }
+                        if (!isUserEmailIncorrect) {
+                            viewModel.sendResetCode(ResetCodeRequest(userEmail))
+                            navController.navigate(Screen.VerifyPasswordScreen.route + "/$userEmail"){
+                                popUpTo(Screen.ForgotPasswordScreen.route){
+                                    inclusive = true
+                                }
+                            }
+                        }
                     },
                 contentAlignment = Alignment.Center
             ) {

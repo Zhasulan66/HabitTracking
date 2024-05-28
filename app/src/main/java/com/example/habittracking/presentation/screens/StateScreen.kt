@@ -7,6 +7,7 @@ import androidx.compose.animation.core.infiniteRepeatable
 import androidx.compose.animation.core.rememberInfiniteTransition
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -23,6 +24,7 @@ import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import com.example.habittracking.R
+import com.example.habittracking.presentation.ui.theme.OrangeFD
 
 @Composable
 fun ErrorScreen(retryAction: () -> Unit, modifier: Modifier = Modifier) {
@@ -37,7 +39,8 @@ fun ErrorScreen(retryAction: () -> Unit, modifier: Modifier = Modifier) {
                 contentDescription = ""
             )
             Text(text = "loading failed", modifier = Modifier.padding(16.dp))
-            Button(onClick = retryAction) {
+            Button(onClick = retryAction,
+                modifier = Modifier.background(OrangeFD)) {
                 Text("retry")
             }
         }

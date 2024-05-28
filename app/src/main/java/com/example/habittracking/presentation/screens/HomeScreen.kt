@@ -99,7 +99,7 @@ fun HomeScreen(
                 //screen title
                 Text(
                     text = "Homepage",
-                    fontFamily = Contacts.MANROPE_FONT_FAMILY,
+                    fontFamily = MANROPE_FONT_FAMILY,
                     fontSize = 18.sp,
                     fontWeight = FontWeight.Bold,
                     color = PurpleDark
@@ -221,6 +221,9 @@ fun HomeScreen(
                     .fillMaxWidth()
                     .clip(RoundedCornerShape(12.dp))
                     .background(Color.White)
+                    .clickable {
+                        navController.navigate(Screen.HabitInfoScreen.route)
+                    }
                     .padding(10.dp),
                 verticalAlignment = Alignment.CenterVertically
             ){

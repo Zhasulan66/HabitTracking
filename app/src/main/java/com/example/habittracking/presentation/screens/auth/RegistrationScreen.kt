@@ -24,6 +24,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -45,20 +46,66 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.example.habittracking.R
 import com.example.habittracking.common.Contacts.Companion.KLASIK_FONT_FAMILY
 import com.example.habittracking.common.Contacts.Companion.MANROPE_FONT_FAMILY
+import com.example.habittracking.domain.model.Resource
+import com.example.habittracking.domain.model.auth.UserRequest
+import com.example.habittracking.domain.model.auth.UserResponse
+import com.example.habittracking.domain.model.auth.VerificationRequest
 import com.example.habittracking.presentation.navigation.Screen
+import com.example.habittracking.presentation.screens.ErrorScreen
+import com.example.habittracking.presentation.screens.LoadingScreen
 import com.example.habittracking.presentation.ui.theme.OrangeF6
 import com.example.habittracking.presentation.ui.theme.OrangeFD
 import com.example.habittracking.presentation.ui.theme.OrangeWhite
 import com.example.habittracking.presentation.ui.theme.PurpleDark
+import com.example.habittracking.presentation.viewmodel.MainViewModel
+
+@Composable
+fun RegistrationScreen(
+    navController: NavController,
+) {
+    val viewModel = hiltViewModel<MainViewModel>()
+    val registrationState by viewModel.registrationState.collectAsState()
+
+    Box(modifier = Modifier
+        .fillMaxSize()){
+
+        when(registrationState){
+            is Resource.Initial -> {
+                RegisterFields(navController, viewModel)
+            }
+            is Resource.Loading -> {
+                LoadingScreen()
+            }
+            is Resource.Error -> {
+                ErrorScreen(modifier = Modifier, retryAction = {
+                    navController.popBackStack()
+                })
+            }
+            is Resource.Success -> {
+                val userResponse = (registrationState as Resource.Success<UserResponse>).data
+                navController.navigate(Screen.VerifyEmailScreen.route + "/${userResponse.email}"){
+                    popUpTo(Screen.RegistrationScreen.route){ inclusive = true }
+                }
+                viewModel.registrationSuccess()
+                viewModel.verifyEmail(VerificationRequest(userResponse.email))
+
+            }
+        }
+
+    }
+
+}
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun RegistrationScreen(
-    navController: NavController
+fun RegisterFields(
+    navController: NavController,
+    viewModel: MainViewModel
 ){
     var userName by remember { mutableStateOf("") }
     var userEmail by remember { mutableStateOf("") }
@@ -294,7 +341,21 @@ fun RegistrationScreen(
                 .clip(RoundedCornerShape(10.dp))
                 .background(OrangeFD)
                 .clickable {
-
+                    isUserNameIncorrect = userName.isEmpty()
+                    isUserEmailIncorrect = userEmail.isEmpty()
+                    isUserPasswordIncorrect = userPassword.isEmpty()
+                    if (!isValidEmail(userEmail)) {
+                        isUserEmailIncorrect = true
+                    }
+                    if (!isPasswordValid(userPassword)) {
+                        isUserPasswordIncorrect = true
+                    }
+                    if (!isUserNameIncorrect && !isUserEmailIncorrect
+                        && !isUserPasswordIncorrect
+                    ) {
+                        val userRequest = UserRequest(userName, userEmail, userPassword)
+                        viewModel.registerUser(userRequest)
+                    }
                 },
             contentAlignment = Alignment.Center
         ) {

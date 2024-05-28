@@ -32,6 +32,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.example.habittracking.R
 import com.example.habittracking.common.Contacts
@@ -41,12 +42,13 @@ import com.example.habittracking.presentation.navigation.Screen
 import com.example.habittracking.presentation.ui.theme.OrangeFD
 import com.example.habittracking.presentation.ui.theme.OrangeWhite
 import com.example.habittracking.presentation.ui.theme.PurpleDark
+import com.example.habittracking.presentation.viewmodel.MainViewModel
 
 @Composable
 fun SettingScreen(
     navController: NavController
 ) {
-
+    val viewModel = hiltViewModel<MainViewModel>()
     Box(
         modifier = Modifier
             .fillMaxSize()
@@ -428,7 +430,7 @@ fun SettingScreen(
             }
             Spacer(modifier = Modifier.height(10.dp))
 
-            //about
+            //exit
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -456,7 +458,7 @@ fun SettingScreen(
                     }
                     Spacer(modifier = Modifier.width(10.dp))
                     Text(
-                        text = "About",
+                        text = "Exit",
                         fontFamily = MANROPE_FONT_FAMILY,
                         fontSize = 16.sp,
                         fontWeight = FontWeight.Medium,
@@ -468,7 +470,14 @@ fun SettingScreen(
                     imageVector = Icons.Default.KeyboardArrowRight,
                     contentDescription = "icon",
                     tint = PurpleDark,
-                    modifier = Modifier.clickable {  }
+                    modifier = Modifier.clickable {
+                        navController.navigate(Screen.LoginScreen.route){
+                            popUpTo(Screen.SettingScreen.route){
+                                inclusive = true
+                            }
+                        }
+                        viewModel.deleteToken()
+                    }
                 )
             }
             Spacer(modifier = Modifier.height(10.dp))
