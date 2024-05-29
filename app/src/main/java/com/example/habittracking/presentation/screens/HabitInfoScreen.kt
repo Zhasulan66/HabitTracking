@@ -207,7 +207,9 @@ fun HabitInfoSuccess(
                                 alpha = 0.1f
                             )
                         )
-                        .clickable { },
+                        .clickable {
+                            navController.navigate(Screen.UpdateHabitScreen.route + "/${habit.id}" + "/${habit.habitName}" + "${habit.notification}")
+                        },
                     contentAlignment = Alignment.Center
                 ) {
                     Icon(

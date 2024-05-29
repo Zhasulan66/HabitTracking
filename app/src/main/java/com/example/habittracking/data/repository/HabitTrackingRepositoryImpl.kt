@@ -51,6 +51,10 @@ class HabitTrackingRepositoryImpl(
         return api.createHabit(token, habitRequest)
     }
 
+    override suspend fun updateHabit(id: Int, token: String, habitRequest: HabitRequest): Habit {
+        return api.updateHabit(id, token, habitRequest)
+    }
+
     override suspend fun getHabitById(id: Int): Habit {
         return api.getHabitById(id)
     }

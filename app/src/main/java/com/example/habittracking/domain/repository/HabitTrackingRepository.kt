@@ -29,6 +29,8 @@ interface HabitTrackingRepository {
 
     suspend fun createHabit(token: String, habitRequest: HabitRequest): Habit
 
+    suspend fun updateHabit(id: Int, token: String, habitRequest: HabitRequest): Habit
+
     suspend fun getHabitById(id: Int): Habit
 
     suspend fun getAnalytics(id: Int): Analytics

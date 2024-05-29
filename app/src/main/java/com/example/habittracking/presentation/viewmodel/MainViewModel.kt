@@ -204,6 +204,30 @@ class MainViewModel @Inject constructor(
         _createHabitState.value = Resource.Initial
     }
 
+    //update habit
+    private val _updateHabitState = MutableStateFlow<Resource<Habit>>(Resource.Initial)
+    val updateHabitState: StateFlow<Resource<Habit>> = _updateHabitState.asStateFlow()
+
+    fun updateHabit(
+        id: Int,
+        token: String,
+        habitRequest: HabitRequest
+    ) {
+        viewModelScope.launch {
+            _updateHabitState.value = Resource.Loading
+            try {
+                val habit = repository.updateHabit(id, "Token $token", habitRequest)
+                _updateHabitState.value = Resource.Success(habit)
+            } catch (e: Exception) {
+                _updateHabitState.value = Resource.Error(e)
+            }
+        }
+    }
+
+    fun updateHabitSuccess() {
+        _updateHabitState.value = Resource.Initial
+    }
+
     //get habit by id
     private val _habitInfoState = MutableStateFlow<Resource<Habit>>(Resource.Initial)
     val habitInfoState: StateFlow<Resource<Habit>> = _habitInfoState.asStateFlow()

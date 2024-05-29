@@ -3,7 +3,6 @@ package com.example.habittracking.presentation.screens
 import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -11,7 +10,6 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.aspectRatio
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -54,37 +52,35 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.example.habittracking.R
 import com.example.habittracking.common.Contacts
-import com.example.habittracking.common.Contacts.Companion.KLASIK_FONT_FAMILY
-import com.example.habittracking.common.Contacts.Companion.MANROPE_FONT_FAMILY
 import com.example.habittracking.domain.model.Habit
 import com.example.habittracking.domain.model.HabitEntryRequest
 import com.example.habittracking.domain.model.HabitRequest
 import com.example.habittracking.domain.model.Resource
 import com.example.habittracking.presentation.navigation.NavigationView
 import com.example.habittracking.presentation.navigation.Screen
-import com.example.habittracking.presentation.ui.theme.OrangeF6
 import com.example.habittracking.presentation.ui.theme.OrangeFC
 import com.example.habittracking.presentation.ui.theme.OrangeFD
 import com.example.habittracking.presentation.ui.theme.OrangeWhite
 import com.example.habittracking.presentation.ui.theme.PurpleDark
 import com.example.habittracking.presentation.viewmodel.MainViewModel
 import java.time.LocalDate
-import java.time.LocalTime
 import java.time.format.DateTimeFormatter
-import java.util.Locale
 
 @Composable
-fun NewHabitScreen(
-    navController: NavController
+fun UpdateHabitScreen(
+    navController: NavController,
+    habitId: Int,
+    habitName: String,
+    isHabitChecked: Boolean
 ){
     val viewModel = hiltViewModel<MainViewModel>()
-    val createHabitState by viewModel.createHabitState.collectAsState()
+    val updateHabitState by viewModel.updateHabitState.collectAsState()
     val savedToken: String? by viewModel.readToken().collectAsState(initial = null)
 
     val currentDate = LocalDate.now()
     val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
 
-    when (createHabitState) {
+    when (updateHabitState) {
         is Resource.Loading -> {
             LoadingScreen()
         }
@@ -101,22 +97,22 @@ fun NewHabitScreen(
         }
 
         is Resource.Success -> {
-            val habit = (createHabitState as Resource.Success<Habit>).data
-            savedToken?.let {
-                viewModel.createHabitEntry(it, HabitEntryRequest(habit.id, currentDate.format(formatter), false, habit.habitName))
-            }
-            Toast.makeText(LocalContext.current, stringResource(id = R.string.habit_created_successfully), Toast.LENGTH_SHORT).show()
+            val habit = (updateHabitState as Resource.Success<Habit>).data
+            Toast.makeText(LocalContext.current, stringResource(id = R.string.habit_updated_successfully), Toast.LENGTH_SHORT).show()
             navController.navigate(Screen.HomeScreen.route){
                 popUpTo(Screen.NewHabitScreen.route){
                     inclusive = true
                 }
             }
-            viewModel.createHabitSuccess()
+            viewModel.updateHabitSuccess()
         }
         is Resource.Initial -> {
-            NewHabitFields(
+            UpdateHabitFields(
                 navController = navController,
-                viewModel = viewModel
+                viewModel = viewModel,
+                habitId = habitId,
+                habitName = habitName,
+                isHabitChecked = isHabitChecked
             )
         }
     }
@@ -124,17 +120,20 @@ fun NewHabitScreen(
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun NewHabitFields(
+fun UpdateHabitFields(
     navController: NavController,
-    viewModel: MainViewModel
+    viewModel: MainViewModel,
+    habitId: Int,
+    habitName: String,
+    isHabitChecked: Boolean
 ) {
-    var habitName by remember { mutableStateOf("") }
+    var myHabitName by remember { mutableStateOf(habitName) }
 
     var showChooseReminderDialog by remember { mutableStateOf(false) }
     var showAddReminderDialog by remember { mutableStateOf(false) }
 
     var reminderTime by remember { mutableStateOf("10:00 AM") }
-    var isChecked by remember { mutableStateOf(false) }
+    var isChecked by remember { mutableStateOf(isHabitChecked) }
 
     val savedToken: String? by viewModel.readToken().collectAsState(initial = null)
 
@@ -196,7 +195,7 @@ fun NewHabitFields(
                 //screen title
                 Text(
                     text = stringResource(id = R.string.new_habit),
-                    fontFamily = MANROPE_FONT_FAMILY,
+                    fontFamily = Contacts.MANROPE_FONT_FAMILY,
                     fontSize = 18.sp,
                     fontWeight = FontWeight.Bold,
                     color = PurpleDark
@@ -212,9 +211,9 @@ fun NewHabitFields(
 
             //habit name
             TextField(
-                value = habitName,
+                value = myHabitName,
                 onValueChange = { text ->
-                    habitName = text
+                    myHabitName = text
                 },
                 textStyle = TextStyle(
                     color = OrangeFD
@@ -226,7 +225,7 @@ fun NewHabitFields(
                     Text(
                         text = stringResource(id = R.string.enter_habit_name),
                         fontSize = 14.sp,
-                        fontFamily = MANROPE_FONT_FAMILY,
+                        fontFamily = Contacts.MANROPE_FONT_FAMILY,
                         color = Color.Gray,
                     )
                 },
@@ -248,7 +247,7 @@ fun NewHabitFields(
             ){
                 Text(
                     text = stringResource(id = R.string.habit_frequency),
-                    fontFamily = MANROPE_FONT_FAMILY,
+                    fontFamily = Contacts.MANROPE_FONT_FAMILY,
                     fontSize = 16.sp,
                     fontWeight = FontWeight.Medium,
                     color = PurpleDark
@@ -370,7 +369,7 @@ fun NewHabitFields(
             ){
                 Text(
                     text = stringResource(id = R.string.reminder),
-                    fontFamily = MANROPE_FONT_FAMILY,
+                    fontFamily = Contacts.MANROPE_FONT_FAMILY,
                     fontSize = 16.sp,
                     fontWeight = FontWeight.Medium,
                     color = PurpleDark
@@ -384,7 +383,7 @@ fun NewHabitFields(
                 ) {
                     Text(
                         text = reminderTime,
-                        fontFamily = MANROPE_FONT_FAMILY,
+                        fontFamily = Contacts.MANROPE_FONT_FAMILY,
                         fontSize = 16.sp,
                         fontWeight = FontWeight.Medium,
                         color = OrangeFD
@@ -409,7 +408,7 @@ fun NewHabitFields(
             ){
                 Text(
                     text = stringResource(id = R.string.notification),
-                    fontFamily = MANROPE_FONT_FAMILY,
+                    fontFamily = Contacts.MANROPE_FONT_FAMILY,
                     fontSize = 16.sp,
                     fontWeight = FontWeight.Medium,
                     color = PurpleDark
@@ -458,14 +457,14 @@ fun NewHabitFields(
                     Spacer(modifier = Modifier.height(20.dp))
                     Text(
                         text = stringResource(id = R.string.start_this_habit),
-                        fontFamily = KLASIK_FONT_FAMILY,
+                        fontFamily = Contacts.KLASIK_FONT_FAMILY,
                         fontSize = 20.sp,
                         color = PurpleDark
                     )
                     Spacer(modifier = Modifier.height(10.dp))
                     Text(
-                        text = stringResource(id = R.string.click_to_save),
-                        fontFamily = MANROPE_FONT_FAMILY,
+                        text = stringResource(id = R.string.click_to_update),
+                        fontFamily = Contacts.MANROPE_FONT_FAMILY,
                         fontSize = 14.sp,
                         color = Color.Gray
                     )
@@ -495,11 +494,13 @@ fun NewHabitFields(
                     .align(Alignment.CenterHorizontally)
                     .clip(CircleShape)
                     .clickable {
-                        if(habitName.isNotEmpty()){
+                        if(myHabitName.isNotEmpty()){
                             savedToken?.let {
-                                viewModel.createHabit(
-                                    it, HabitRequest(
-                                        habitName = habitName,
+                                viewModel.updateHabit(
+                                    habitId,
+                                    it,
+                                    HabitRequest(
+                                        habitName = myHabitName,
                                         frequency = "Daily",
                                         reminderTime = convertTo24HourFormat(reminderTime),
                                         notification = isChecked
@@ -518,28 +519,28 @@ fun NewHabitFields(
             modifier = Modifier.align(Alignment.BottomCenter),
             onHomeClick = {
                 navController.navigate(Screen.HomeScreen.route) {
-                    popUpTo(Screen.NewHabitScreen.route) {
+                    popUpTo(Screen.UpdateHabitScreen.route) {
                         inclusive = true
                     }
                 }
             },
             onAddClick = {
                 navController.navigate(Screen.NewHabitScreen.route) {
-                    popUpTo(Screen.NewHabitScreen.route) {
+                    popUpTo(Screen.UpdateHabitScreen.route) {
                         inclusive = true
                     }
                 }
             },
             onProfileClick = {
                 navController.navigate(Screen.ProfileScreen.route) {
-                    popUpTo(Screen.NewHabitScreen.route) {
+                    popUpTo(Screen.UpdateHabitScreen.route) {
                         inclusive = true
                     }
                 }
             },
             onSettingClick = {
                 navController.navigate(Screen.SettingScreen.route) {
-                    popUpTo(Screen.NewHabitScreen.route) {
+                    popUpTo(Screen.UpdateHabitScreen.route) {
                         inclusive = true
                     }
                 }
@@ -575,17 +576,3 @@ fun NewHabitFields(
     }
 
 }
-
-fun convertTo24HourFormat(time: String): String {
-    // Define the input format
-    val inputFormatter = DateTimeFormatter.ofPattern("hh:mma", Locale.ENGLISH)
-    // Define the output format
-    val outputFormatter = DateTimeFormatter.ofPattern("HH:mm:ss")
-
-    // Parse the input time string
-    val parsedTime = LocalTime.parse(time, inputFormatter)
-
-    // Format the parsed time to the desired output format
-    return parsedTime.format(outputFormatter)
-}
-

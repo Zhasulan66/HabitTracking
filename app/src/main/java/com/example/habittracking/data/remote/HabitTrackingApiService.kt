@@ -47,6 +47,13 @@ interface HabitTrackingApiService {
         @Body habitRequest: HabitRequest
     ): Habit
 
+    @PUT("/api/habits/{id}")
+    suspend fun updateHabit(
+        @Path("id") id: Int,
+        @Header("Authorization") token: String,
+        @Body habitRequest: HabitRequest
+    ): Habit
+
     @GET("/api/habits/{id}/")
     suspend fun getHabitById(
         @Path("id") id: Int

@@ -16,6 +16,7 @@ import com.example.habittracking.presentation.screens.NewHabitScreen
 import com.example.habittracking.presentation.screens.ProfileScreen
 import com.example.habittracking.presentation.screens.SettingScreen
 import com.example.habittracking.presentation.screens.SplashScreen
+import com.example.habittracking.presentation.screens.UpdateHabitScreen
 import com.example.habittracking.presentation.screens.auth.ForgotPasswordScreen
 import com.example.habittracking.presentation.screens.auth.LoginScreen
 import com.example.habittracking.presentation.screens.auth.OnboardingScreen
@@ -161,6 +162,34 @@ fun Navigation() {
             HabitInfoScreen(
                 navController = navController,
                 habitId = entry.arguments!!.getInt("habitId")
+            )
+        }
+
+        //UpdateHabitScreen
+        composable(route = Screen.UpdateHabitScreen.route + "/{habitId}" + "/{habitName}" + "/{isChecked}",
+            arguments = listOf(
+                navArgument("habitId"){
+                    type = NavType.IntType
+                    defaultValue = 0
+                    nullable = false
+                },
+                navArgument("habitName"){
+                    type = NavType.StringType
+                    defaultValue = ""
+                    nullable = false
+                },
+                navArgument("isChecked"){
+                    type = NavType.BoolType
+                    defaultValue = false
+                    nullable = false
+                },
+            )
+        ) { entry ->
+            UpdateHabitScreen(
+                navController = navController,
+                habitId = entry.arguments!!.getInt("habitId"),
+                habitName = entry.arguments!!.getString("habitName").toString(),
+                isHabitChecked = entry.arguments!!.getBoolean("isChecked")
             )
         }
 

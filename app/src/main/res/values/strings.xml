@@ -7,6 +7,7 @@
     <string name="habits">HABITS</string>
 
     <string name="habit_created_successfully">Habit created successfully!</string>
+    <string name="habit_updated_successfully">Habit updated successfully!</string>
     <string name="new_habit">New Habit</string>
     <string name="enter_habit_name">Enter habit name</string>
     <string name="habit_frequency">Habit Frequency</string>
@@ -22,7 +23,9 @@
     <string name="reminder">Reminder</string>
     <string name="notification">Notification</string>
     <string name="start_this_habit">Start this habit</string>
+    <string name="update_this_habit">Update this habit</string>
     <string name="click_to_save">Click button to save habit</string>
+    <string name="click_to_update">Click button to update habit</string>
     <string name="change_reminder">Change Reminder</string>
     <string name="cancel">Cancel</string>
     <string name="save">Save</string>

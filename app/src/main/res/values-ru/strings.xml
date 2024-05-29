@@ -7,6 +7,7 @@
     <string name="habits">ПРИВЫЧКИ</string>
 
     <string name="habit_created_successfully">Привычка создана успешно!</string>
+    <string name="habit_updated_successfully">Привычка обновлена успешно!</string>
     <string name="new_habit">Новая привычка</string>
     <string name="enter_habit_name">Введите название привычки</string>
     <string name="habit_frequency">Частота привычки</string>
@@ -22,7 +23,9 @@
     <string name="reminder">Напоминание</string>
     <string name="notification">Уведомление</string>
     <string name="start_this_habit">Начать привычку</string>
+    <string name="update_this_habit">Обновить привычку</string>
     <string name="click_to_save">Нажмите чтобы сохранить</string>
+    <string name="click_to_update">Нажмите чтобы обновить</string>
     <string name="change_reminder">Изменить напоминание</string>
     <string name="cancel">Отмена</string>
     <string name="save">Save</string>

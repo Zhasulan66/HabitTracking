@@ -24,6 +24,7 @@ sealed class Screen(val route: String) {
     data object SettingScreen: Screen("setting_screen")
 
     data object NewHabitScreen: Screen("new_habit_screen")
+    data object UpdateHabitScreen: Screen("update_habit_screen")
 
     data object HabitInfoScreen: Screen("habit_info_screen")
 
