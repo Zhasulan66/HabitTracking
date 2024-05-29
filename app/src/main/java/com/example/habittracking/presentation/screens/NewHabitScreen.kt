@@ -578,7 +578,7 @@ fun NewHabitFields(
 
 fun convertTo24HourFormat(time: String): String {
     // Define the input format
-    val inputFormatter = DateTimeFormatter.ofPattern("hh:mma", Locale.ENGLISH)
+    val inputFormatter = DateTimeFormatter.ofPattern("hh:mm a", Locale.ENGLISH)
     // Define the output format
     val outputFormatter = DateTimeFormatter.ofPattern("HH:mm:ss")
 

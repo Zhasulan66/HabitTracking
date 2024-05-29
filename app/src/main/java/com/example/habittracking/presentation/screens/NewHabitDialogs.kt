@@ -226,7 +226,7 @@ fun AddReminderDialog(
                     modifier = Modifier
                         .clickable {
                             if (selectedTime.value != "00:00") {
-                                onPositiveClick(selectedTime.value + if (isAm) "AM" else "PM")
+                                onPositiveClick(selectedTime.value + if (isAm) " AM" else " PM")
                             }
                         }
                 )
