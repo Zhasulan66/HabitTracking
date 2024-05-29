@@ -45,6 +45,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -56,6 +57,7 @@ import com.example.habittracking.common.Contacts
 import com.example.habittracking.common.Contacts.Companion.KLASIK_FONT_FAMILY
 import com.example.habittracking.common.Contacts.Companion.MANROPE_FONT_FAMILY
 import com.example.habittracking.domain.model.Habit
+import com.example.habittracking.domain.model.HabitEntryRequest
 import com.example.habittracking.domain.model.HabitRequest
 import com.example.habittracking.domain.model.Resource
 import com.example.habittracking.presentation.navigation.NavigationView
@@ -66,6 +68,7 @@ import com.example.habittracking.presentation.ui.theme.OrangeFD
 import com.example.habittracking.presentation.ui.theme.OrangeWhite
 import com.example.habittracking.presentation.ui.theme.PurpleDark
 import com.example.habittracking.presentation.viewmodel.MainViewModel
+import java.time.LocalDate
 import java.time.LocalTime
 import java.time.format.DateTimeFormatter
 import java.util.Locale
@@ -76,6 +79,10 @@ fun NewHabitScreen(
 ){
     val viewModel = hiltViewModel<MainViewModel>()
     val createHabitState by viewModel.createHabitState.collectAsState()
+    val savedToken: String? by viewModel.readToken().collectAsState(initial = null)
+
+    val currentDate = LocalDate.now()
+    val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
 
     when (createHabitState) {
         is Resource.Loading -> {
@@ -95,7 +102,10 @@ fun NewHabitScreen(
 
         is Resource.Success -> {
             val habit = (createHabitState as Resource.Success<Habit>).data
-            Toast.makeText(LocalContext.current, "Habit created succesfully!", Toast.LENGTH_SHORT).show()
+            savedToken?.let {
+                viewModel.createHabitEntry(it, HabitEntryRequest(habit.id, currentDate.format(formatter), false, habit.habitName))
+            }
+            Toast.makeText(LocalContext.current, stringResource(id = R.string.habit_created_successfully), Toast.LENGTH_SHORT).show()
             navController.navigate(Screen.HomeScreen.route){
                 popUpTo(Screen.NewHabitScreen.route){
                     inclusive = true
@@ -136,7 +146,8 @@ fun NewHabitFields(
         Image(
             painter = painterResource(R.drawable.home_bg),
             contentDescription = "img",
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier
+                .fillMaxWidth()
                 .align(Alignment.BottomCenter),
             contentScale = ContentScale.FillWidth
         )
@@ -159,10 +170,17 @@ fun NewHabitFields(
                     modifier = Modifier
                         .size(40.dp)
                         .clip(CircleShape)
-                        .background(Color(PurpleDark.red, PurpleDark.green, PurpleDark.blue, alpha = 0.1f))
+                        .background(
+                            Color(
+                                PurpleDark.red,
+                                PurpleDark.green,
+                                PurpleDark.blue,
+                                alpha = 0.1f
+                            )
+                        )
                         .clickable {
-                            navController.navigate(Screen.HomeScreen.route){
-                                popUpTo(Screen.NewHabitScreen.route){
+                            navController.navigate(Screen.HomeScreen.route) {
+                                popUpTo(Screen.NewHabitScreen.route) {
                                     inclusive = true
                                 }
                             }
@@ -177,8 +195,8 @@ fun NewHabitFields(
 
                 //screen title
                 Text(
-                    text = "New Habit",
-                    fontFamily = Contacts.MANROPE_FONT_FAMILY,
+                    text = stringResource(id = R.string.new_habit),
+                    fontFamily = MANROPE_FONT_FAMILY,
                     fontSize = 18.sp,
                     fontWeight = FontWeight.Bold,
                     color = PurpleDark
@@ -206,9 +224,9 @@ fun NewHabitFields(
                     .clip(RoundedCornerShape(12.dp)),
                 placeholder = {
                     Text(
-                        text = "Enter habit name",
+                        text = stringResource(id = R.string.enter_habit_name),
                         fontSize = 14.sp,
-                        fontFamily = Contacts.MANROPE_FONT_FAMILY,
+                        fontFamily = MANROPE_FONT_FAMILY,
                         color = Color.Gray,
                     )
                 },
@@ -229,7 +247,7 @@ fun NewHabitFields(
                     .padding(10.dp)
             ){
                 Text(
-                    text = "Habit Frequency",
+                    text = stringResource(id = R.string.habit_frequency),
                     fontFamily = MANROPE_FONT_FAMILY,
                     fontSize = 16.sp,
                     fontWeight = FontWeight.Medium,
@@ -245,7 +263,7 @@ fun NewHabitFields(
                     //sun
                     Column{
                         Text(
-                            text = "SUN"
+                            text = stringResource(id = R.string.sun)
                         )
                         Box(
                             modifier = Modifier
@@ -259,7 +277,7 @@ fun NewHabitFields(
                     //mon
                     Column{
                         Text(
-                            text = "MON"
+                            text = stringResource(id = R.string.mon)
                         )
                         Box(
                             modifier = Modifier
@@ -273,7 +291,7 @@ fun NewHabitFields(
                     //tue
                     Column{
                         Text(
-                            text = "TUE"
+                            text = stringResource(id = R.string.tue)
                         )
                         Box(
                             modifier = Modifier
@@ -287,7 +305,7 @@ fun NewHabitFields(
                     //wed
                     Column{
                         Text(
-                            text = "WED"
+                            text = stringResource(id = R.string.wed)
                         )
                         Box(
                             modifier = Modifier
@@ -301,7 +319,7 @@ fun NewHabitFields(
                     //thu
                     Column{
                         Text(
-                            text = "THU"
+                            text = stringResource(id = R.string.thu)
                         )
                         Box(
                             modifier = Modifier
@@ -315,7 +333,7 @@ fun NewHabitFields(
                     //fri
                     Column{
                         Text(
-                            text = "FRI"
+                            text = stringResource(id = R.string.fri)
                         )
                         Box(
                             modifier = Modifier
@@ -329,7 +347,7 @@ fun NewHabitFields(
                     //sat
                     Column{
                         Text(
-                            text = "SAT"
+                            text = stringResource(id = R.string.sat)
                         )
                         Box(
                             modifier = Modifier
@@ -351,7 +369,7 @@ fun NewHabitFields(
                 horizontalArrangement = Arrangement.SpaceBetween
             ){
                 Text(
-                    text = "Reminder",
+                    text = stringResource(id = R.string.reminder),
                     fontFamily = MANROPE_FONT_FAMILY,
                     fontSize = 16.sp,
                     fontWeight = FontWeight.Medium,
@@ -390,7 +408,7 @@ fun NewHabitFields(
                 verticalAlignment = Alignment.CenterVertically
             ){
                 Text(
-                    text = "Notification",
+                    text = stringResource(id = R.string.notification),
                     fontFamily = MANROPE_FONT_FAMILY,
                     fontSize = 16.sp,
                     fontWeight = FontWeight.Medium,
@@ -406,7 +424,7 @@ fun NewHabitFields(
                                 .height(8.dp)
                                 .aspectRatio(1f)
                                 .clip(CircleShape)
-                                .background(if(isChecked) OrangeFD else PurpleDark)
+                                .background(if (isChecked) OrangeFD else PurpleDark)
                         )
                     },
                     colors = SwitchDefaults.colors(
@@ -439,14 +457,14 @@ fun NewHabitFields(
                 ){
                     Spacer(modifier = Modifier.height(20.dp))
                     Text(
-                        text = "Start this habit",
+                        text = stringResource(id = R.string.start_this_habit),
                         fontFamily = KLASIK_FONT_FAMILY,
                         fontSize = 20.sp,
                         color = PurpleDark
                     )
                     Spacer(modifier = Modifier.height(10.dp))
                     Text(
-                        text = "Click button to save habit",
+                        text = stringResource(id = R.string.click_to_save),
                         fontFamily = MANROPE_FONT_FAMILY,
                         fontSize = 14.sp,
                         color = Color.Gray
@@ -478,12 +496,14 @@ fun NewHabitFields(
                     .clip(CircleShape)
                     .clickable {
                         savedToken?.let {
-                            viewModel.createHabit(it, HabitRequest(
-                                habitName = habitName,
-                                frequency = "Daily",
-                                reminderTime = convertTo24HourFormat(reminderTime),
-                                notification = isChecked
-                            ))
+                            viewModel.createHabit(
+                                it, HabitRequest(
+                                    habitName = habitName,
+                                    frequency = "Daily",
+                                    reminderTime = convertTo24HourFormat(reminderTime),
+                                    notification = isChecked
+                                )
+                            )
                         }
                     }
             )

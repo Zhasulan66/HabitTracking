@@ -22,29 +22,41 @@ import androidx.compose.material.icons.filled.KeyboardArrowRight
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.example.habittracking.R
 import com.example.habittracking.common.Contacts.Companion.KLASIK_FONT_FAMILY
 import com.example.habittracking.common.Contacts.Companion.MANROPE_FONT_FAMILY
+import com.example.habittracking.domain.model.Habit
+import com.example.habittracking.domain.model.HabitEntry
+import com.example.habittracking.domain.model.Resource
+import com.example.habittracking.domain.model.auth.UserResponse
 import com.example.habittracking.presentation.navigation.NavigationView
 import com.example.habittracking.presentation.navigation.Screen
 import com.example.habittracking.presentation.ui.theme.OrangeWhite
 import com.example.habittracking.presentation.ui.theme.PurpleDark
+import com.example.habittracking.presentation.viewmodel.MainViewModel
 
 @Composable
 fun ProfileScreen(
     navController: NavController
 ) {
+    val viewModel = hiltViewModel<MainViewModel>()
+    val savedToken: String? by viewModel.readToken().collectAsState(initial = null)
+    val userState by viewModel.userState.collectAsState()
 
     Box(
         modifier = Modifier
@@ -65,13 +77,20 @@ fun ProfileScreen(
                     .fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
-            ){
+            ) {
                 //back btn
                 Box(
                     modifier = Modifier
                         .size(40.dp)
                         .clip(CircleShape)
-                        .background(Color(PurpleDark.red, PurpleDark.green, PurpleDark.blue, alpha = 0.1f))
+                        .background(
+                            Color(
+                                PurpleDark.red,
+                                PurpleDark.green,
+                                PurpleDark.blue,
+                                alpha = 0.1f
+                            )
+                        )
                         .clickable {
                             navController.popBackStack()
                         },
@@ -85,7 +104,7 @@ fun ProfileScreen(
 
                 //screen title
                 Text(
-                    text = "Profile",
+                    text = stringResource(id = R.string.profile),
                     fontFamily = MANROPE_FONT_FAMILY,
                     fontSize = 18.sp,
                     fontWeight = FontWeight.Bold,
@@ -97,7 +116,14 @@ fun ProfileScreen(
                     modifier = Modifier
                         .size(40.dp)
                         .clip(CircleShape)
-                        .background(Color(PurpleDark.red, PurpleDark.green, PurpleDark.blue, alpha = 0.1f))
+                        .background(
+                            Color(
+                                PurpleDark.red,
+                                PurpleDark.green,
+                                PurpleDark.blue,
+                                alpha = 0.1f
+                            )
+                        )
                         .clickable {
 
                         },
@@ -111,132 +137,40 @@ fun ProfileScreen(
             }
             Spacer(modifier = Modifier.height(20.dp))
 
-            Column(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .clip(RoundedCornerShape(10.dp))
-                    .background(Color.White)
-                    .padding(10.dp)
-            ) {
-                Row(
-                    modifier = Modifier,
-                    verticalAlignment = Alignment.CenterVertically
-                ){
-                    Image(
-                        painter = painterResource(R.drawable.profile_img),
-                        contentDescription = "img",
-                        modifier = Modifier
-                            .size(60.dp),
-                        contentScale = ContentScale.Crop
-                    )
-                    Spacer(modifier = Modifier.width(10.dp))
+            when (userState) {
+                is Resource.Loading -> {
+                    LoadingScreen()
+                }
 
-                    Column(
-                        modifier = Modifier
-                    ){
-                        Text(
-                            text = "Marilyn Aminoff",
-                            fontFamily = MANROPE_FONT_FAMILY,
-                            fontSize = 16.sp,
-                            fontWeight = FontWeight.Bold,
-                            color = PurpleDark
-                        )
-                        Text(
-                            text = "Name",
-                            fontFamily = MANROPE_FONT_FAMILY,
-                            fontSize = 12.sp,
-                            fontWeight = FontWeight.Medium,
-                            color = Color.Gray
-                        )
+                is Resource.Error -> {
+                    ErrorScreen(
+                        modifier = Modifier,
+                        retryAction = {
+                            navController.navigate(
+                                route = navController.currentDestination?.route ?: ""
+                            ) {
+                                popUpTo(
+                                    navController.previousBackStackEntry?.destination?.id
+                                        ?: return@navigate
+                                )
+                            }
+                        }
+                    )
+                }
+
+                is Resource.Success -> {
+
+                    val userResponse = (userState as Resource.Success<UserResponse>).data
+                    ProfileSuccess(userResponse)
+
+                }
+
+                is Resource.Initial -> {
+                    savedToken?.let {
+                        viewModel.fetchUserByToken(it)
                     }
+
                 }
-            }
-            Spacer(modifier = Modifier.height(10.dp))
-
-            //billing methods
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .clip(RoundedCornerShape(10.dp))
-                    .background(Color.White)
-                    .padding(10.dp),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
-            ){
-                Row(
-                    modifier = Modifier,
-                    verticalAlignment = Alignment.CenterVertically
-                ){
-                    Image(
-                        painter = painterResource(R.drawable.profile_billing_icon),
-                        contentDescription = "img"
-                    )
-                    Spacer(modifier = Modifier.width(10.dp))
-                    Text(
-                        text = "Billing methods",
-                        fontFamily = MANROPE_FONT_FAMILY,
-                        fontSize = 16.sp,
-                        fontWeight = FontWeight.Medium,
-                        color = PurpleDark
-                    )
-                }
-
-                Icon(
-                    imageVector = Icons.Default.KeyboardArrowRight,
-                    contentDescription = "icon",
-                    tint = PurpleDark,
-                    modifier = Modifier.clickable {  }
-                )
-            }
-            Spacer(modifier = Modifier.height(10.dp))
-
-            //longest streak
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .clip(RoundedCornerShape(10.dp))
-                    .background(Color.White)
-                    .padding(10.dp),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
-            ){
-                Row(
-                    modifier = Modifier,
-                    verticalAlignment = Alignment.CenterVertically
-                ){
-                    Image(
-                        painter = painterResource(R.drawable.profile_streak_icon),
-                        contentDescription = "img"
-                    )
-                    Spacer(modifier = Modifier.width(10.dp))
-                    Text(
-                        text = "Longest Streak",
-                        fontFamily = MANROPE_FONT_FAMILY,
-                        fontSize = 16.sp,
-                        fontWeight = FontWeight.Medium,
-                        color = PurpleDark
-                    )
-                }
-
-                Row(
-                    verticalAlignment = Alignment.CenterVertically
-                ){
-                    Text(
-                        text = "20 Days",
-                        fontSize = 16.sp,
-                        fontFamily = MANROPE_FONT_FAMILY,
-                        fontWeight = FontWeight.Bold,
-                        color = PurpleDark
-                    )
-                    Spacer(modifier = Modifier.width(4.dp))
-                    Icon(
-                        imageVector = Icons.Default.KeyboardArrowRight,
-                        contentDescription = "icon",
-                        tint = PurpleDark,
-                        modifier = Modifier.clickable {  }
-                    )
-                }
-
             }
 
 
@@ -275,4 +209,138 @@ fun ProfileScreen(
             btnId = 3,
         )
     }
+}
+
+@Composable
+fun ProfileSuccess(
+    user: UserResponse
+) {
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .clip(RoundedCornerShape(10.dp))
+            .background(Color.White)
+            .padding(10.dp)
+    ) {
+        Row(
+            modifier = Modifier,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Image(
+                painter = painterResource(R.drawable.profile_img),
+                contentDescription = "img",
+                modifier = Modifier
+                    .size(60.dp),
+                contentScale = ContentScale.Crop
+            )
+            Spacer(modifier = Modifier.width(10.dp))
+
+            Column(
+                modifier = Modifier
+            ) {
+                Text(
+                    text = user.username,
+                    fontFamily = MANROPE_FONT_FAMILY,
+                    fontSize = 16.sp,
+                    fontWeight = FontWeight.Bold,
+                    color = PurpleDark
+                )
+                Text(
+                    text = stringResource(id = R.string.name),
+                    fontFamily = MANROPE_FONT_FAMILY,
+                    fontSize = 12.sp,
+                    fontWeight = FontWeight.Medium,
+                    color = Color.Gray
+                )
+            }
+        }
+    }
+    Spacer(modifier = Modifier.height(10.dp))
+
+    //billing methods
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .clip(RoundedCornerShape(10.dp))
+            .background(Color.White)
+            .padding(10.dp),
+        horizontalArrangement = Arrangement.SpaceBetween,
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Row(
+            modifier = Modifier,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Image(
+                painter = painterResource(R.drawable.profile_billing_icon),
+                contentDescription = "img"
+            )
+            Spacer(modifier = Modifier.width(10.dp))
+            Text(
+                text = stringResource(id = R.string.billing_methods),
+                fontFamily = MANROPE_FONT_FAMILY,
+                fontSize = 16.sp,
+                fontWeight = FontWeight.Medium,
+                color = PurpleDark
+            )
+        }
+
+        Icon(
+            imageVector = Icons.Default.KeyboardArrowRight,
+            contentDescription = "icon",
+            tint = PurpleDark,
+            modifier = Modifier.clickable { }
+        )
+    }
+    Spacer(modifier = Modifier.height(10.dp))
+
+    //longest streak
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .clip(RoundedCornerShape(10.dp))
+            .background(Color.White)
+            .padding(10.dp),
+        horizontalArrangement = Arrangement.SpaceBetween,
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Row(
+            modifier = Modifier,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Image(
+                painter = painterResource(R.drawable.profile_streak_icon),
+                contentDescription = "img"
+            )
+            Spacer(modifier = Modifier.width(10.dp))
+            Text(
+                text = stringResource(id = R.string.longest_streak),
+                fontFamily = MANROPE_FONT_FAMILY,
+                fontSize = 16.sp,
+                fontWeight = FontWeight.Medium,
+                color = PurpleDark
+            )
+        }
+
+        Row(
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Text(
+                text = stringResource(id = R.string.days20),
+                fontSize = 16.sp,
+                fontFamily = MANROPE_FONT_FAMILY,
+                fontWeight = FontWeight.Bold,
+                color = PurpleDark
+            )
+            Spacer(modifier = Modifier.width(4.dp))
+            Icon(
+                imageVector = Icons.Default.KeyboardArrowRight,
+                contentDescription = "icon",
+                tint = PurpleDark,
+                modifier = Modifier.clickable { }
+            )
+        }
+
+    }
+
 }

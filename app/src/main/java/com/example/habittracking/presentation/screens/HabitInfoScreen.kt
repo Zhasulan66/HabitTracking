@@ -40,6 +40,7 @@ import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -52,6 +53,7 @@ import com.example.habittracking.common.Contacts.Companion.KLASIK_FONT_FAMILY
 import com.example.habittracking.common.Contacts.Companion.MANROPE_FONT_FAMILY
 import com.example.habittracking.domain.model.Analytics
 import com.example.habittracking.domain.model.Habit
+import com.example.habittracking.domain.model.HabitEntryRequest
 import com.example.habittracking.domain.model.Resource
 import com.example.habittracking.presentation.navigation.NavigationView
 import com.example.habittracking.presentation.navigation.Screen
@@ -62,6 +64,7 @@ import com.example.habittracking.presentation.ui.theme.OrangeFD
 import com.example.habittracking.presentation.ui.theme.OrangeWhite
 import com.example.habittracking.presentation.ui.theme.PurpleDark
 import com.example.habittracking.presentation.viewmodel.MainViewModel
+import java.time.LocalDate
 import java.time.LocalTime
 import java.time.format.DateTimeFormatter
 import java.util.Locale
@@ -117,14 +120,14 @@ fun HabitInfoScreen(
                 is Resource.Success -> {
                     val analytics = (analyticsState as Resource.Success<Analytics>).data
                     val habit = (habitInfoState as Resource.Success<Habit>).data
-                    HabitInfoSuccess(navController, habit, analytics)
+                    HabitInfoSuccess(navController, viewModel, habit, analytics)
                 }
 
                 else -> {}
             }
         }
         else -> {
-            viewModel.fetchAnalytics(1)
+            viewModel.fetchAnalytics(habitId)
             viewModel.fetchHabitById(habitId)
         }
     }
@@ -133,10 +136,13 @@ fun HabitInfoScreen(
 @Composable
 fun HabitInfoSuccess(
     navController: NavController,
+    viewModel: MainViewModel,
     habit: Habit,
     analytics: Analytics
 ) {
     var showHabitCompleteDialog by remember { mutableStateOf(false) }
+    val savedToken: String? by viewModel.readToken().collectAsState(initial = null)
+
 
     Box(
         modifier = Modifier
@@ -183,7 +189,7 @@ fun HabitInfoSuccess(
 
                 //screen title
                 Text(
-                    text = "Habit Info",
+                    text = stringResource(id = R.string.habit_info),
                     fontFamily = MANROPE_FONT_FAMILY,
                     fontSize = 18.sp,
                     fontWeight = FontWeight.Bold,
@@ -258,7 +264,7 @@ fun HabitInfoSuccess(
                         )
                         Spacer(modifier = Modifier.width(8.dp))
                         Text(
-                            text = "Repeat everyday",
+                            text = stringResource(id = R.string.repeat_everyday),
                             fontFamily = MANROPE_FONT_FAMILY,
                             fontSize = 12.sp,
                             fontWeight = FontWeight.Medium,
@@ -275,7 +281,7 @@ fun HabitInfoSuccess(
                         )
                         Spacer(modifier = Modifier.width(8.dp))
                         Text(
-                            text = "Reminders: ${convertTo12HourFormat(habit.reminderTime)}",
+                            text = stringResource(id = R.string.reminder) + ": ${convertTo12HourFormat(habit.reminderTime)}",
                             fontFamily = MANROPE_FONT_FAMILY,
                             fontSize = 12.sp,
                             fontWeight = FontWeight.Medium,
@@ -289,7 +295,7 @@ fun HabitInfoSuccess(
             Spacer(modifier = Modifier.height(10.dp))
 
             Text(
-                text = "Analytics",
+                text = stringResource(id = R.string.analytics),
                 fontFamily = MANROPE_FONT_FAMILY,
                 fontSize = 16.sp,
                 fontWeight = FontWeight.Medium,
@@ -329,7 +335,7 @@ fun HabitInfoSuccess(
                             )
                             Spacer(modifier = Modifier.height(8.dp))
                             Text(
-                                text = "Longest Streak",
+                                text = stringResource(id = R.string.longest_streak),
                                 fontFamily = MANROPE_FONT_FAMILY,
                                 fontWeight = FontWeight.Medium,
                                 fontSize = 12.sp,
@@ -361,7 +367,7 @@ fun HabitInfoSuccess(
                             )
                             Spacer(modifier = Modifier.height(8.dp))
                             Text(
-                                text = "Current Streak",
+                                text = stringResource(id = R.string.current_streak),
                                 fontFamily = MANROPE_FONT_FAMILY,
                                 fontWeight = FontWeight.Medium,
                                 fontSize = 12.sp,
@@ -400,7 +406,7 @@ fun HabitInfoSuccess(
                             )
                             Spacer(modifier = Modifier.height(8.dp))
                             Text(
-                                text = "Completion Rate",
+                                text = stringResource(id = R.string.completion_rate),
                                 fontFamily = MANROPE_FONT_FAMILY,
                                 fontWeight = FontWeight.Medium,
                                 fontSize = 12.sp,
@@ -432,7 +438,7 @@ fun HabitInfoSuccess(
                             )
                             Spacer(modifier = Modifier.height(8.dp))
                             Text(
-                                text = "Average Easiness Score",
+                                text = stringResource(id = R.string.avg_easiness_score),
                                 fontFamily = MANROPE_FONT_FAMILY,
                                 fontWeight = FontWeight.Medium,
                                 fontSize = 12.sp,
@@ -449,6 +455,9 @@ fun HabitInfoSuccess(
             }
             Spacer(modifier = Modifier.height(10.dp))
 
+            val currentDate = LocalDate.now()
+            val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
+
             //mark complete btn
             Box(
                 modifier = Modifier
@@ -457,12 +466,16 @@ fun HabitInfoSuccess(
                     .clip(RoundedCornerShape(10.dp))
                     .background(OrangeFD)
                     .clickable {
+                        savedToken?.let {
+                            viewModel.createHabitEntry(it, HabitEntryRequest(habit.id, currentDate.format(formatter), true, habit.habitName))
+                        }
+
                         showHabitCompleteDialog = true
                     },
                 contentAlignment = Alignment.Center
             ) {
                 Text(
-                    text = "Mark Habit as Complete",
+                    text = stringResource(id = R.string.mark_as_complete),
                     fontFamily = MANROPE_FONT_FAMILY,
                     fontSize = 16.sp,
                     fontWeight = FontWeight.Bold,
@@ -479,12 +492,14 @@ fun HabitInfoSuccess(
                     .clip(RoundedCornerShape(10.dp))
                     .background(Color.White)
                     .clickable {
-
+                        savedToken?.let {
+                            viewModel.createHabitEntry(it, HabitEntryRequest(habit.id, currentDate.format(formatter), false, habit.habitName))
+                        }
                     },
                 contentAlignment = Alignment.Center
             ) {
                 Text(
-                    text = "Mark Habit as Missed",
+                    text = stringResource(id = R.string.mark_as_missed),
                     fontFamily = MANROPE_FONT_FAMILY,
                     fontSize = 16.sp,
                     fontWeight = FontWeight.Bold,
@@ -588,7 +603,7 @@ fun HabitCompleteDialog(
                 Spacer(modifier = Modifier.height(10.dp))
 
                 Text(
-                    text = "Congratulations!",
+                    text = stringResource(id = R.string.congratulations),
                     fontFamily = KLASIK_FONT_FAMILY,
                     fontSize = 24.sp,
                     color = PurpleDark,
@@ -597,7 +612,7 @@ fun HabitCompleteDialog(
                 Spacer(modifier = Modifier.height(10.dp))
 
                 Text(
-                    text = "Well done! Keep in that way!",
+                    text = stringResource(id = R.string.keep_in_that_way),
                     fontFamily = MANROPE_FONT_FAMILY,
                     fontWeight = FontWeight.Medium,
                     fontSize = 16.sp,
@@ -618,7 +633,7 @@ fun HabitCompleteDialog(
                     contentAlignment = Alignment.Center
                 ) {
                     Text(
-                        text = "Create New Habit Reminder",
+                        text = stringResource(id = R.string.create_new_habit_reminder),
                         fontFamily = MANROPE_FONT_FAMILY,
                         fontSize = 16.sp,
                         fontWeight = FontWeight.Bold,
@@ -638,7 +653,7 @@ fun HabitCompleteDialog(
                     contentAlignment = Alignment.Center
                 ) {
                     Text(
-                        text = "Continue",
+                        text = stringResource(id = R.string.continue_text),
                         fontFamily = MANROPE_FONT_FAMILY,
                         fontSize = 16.sp,
                         fontWeight = FontWeight.Bold,

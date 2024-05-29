@@ -1,6 +1,7 @@
 package com.example.habittracking.presentation.navigation
 
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.platform.LocalContext
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -8,6 +9,7 @@ import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.example.eduventure.presentation.screens.auth.ChangePasswordScreen
 import com.example.eduventure.presentation.screens.auth.VerifyPasswordScreen
+import com.example.habittracking.presentation.LanguageManager
 import com.example.habittracking.presentation.screens.HabitInfoScreen
 import com.example.habittracking.presentation.screens.HomeScreen
 import com.example.habittracking.presentation.screens.NewHabitScreen
@@ -23,8 +25,7 @@ import com.example.habittracking.presentation.screens.auth.VerifyEmailScreen
 @Composable
 fun Navigation() {
     val navController = rememberNavController()
-
-
+    val languageManager = LanguageManager(LocalContext.current)
 
     NavHost(
         navController = navController,
@@ -135,7 +136,8 @@ fun Navigation() {
         //SettingScreen
         composable(route = Screen.SettingScreen.route) {
             SettingScreen(
-                navController = navController
+                navController = navController,
+                languageManager = languageManager
             )
         }
 

@@ -3,12 +3,14 @@ package com.example.habittracking.data.remote
 import com.example.habittracking.domain.model.Analytics
 import com.example.habittracking.domain.model.Habit
 import com.example.habittracking.domain.model.HabitEntry
+import com.example.habittracking.domain.model.HabitEntryRequest
 import com.example.habittracking.domain.model.HabitRequest
 import com.example.habittracking.domain.model.auth.*
 import retrofit2.http.Body
 import retrofit2.http.GET
 import retrofit2.http.Header
 import retrofit2.http.POST
+import retrofit2.http.PUT
 import retrofit2.http.Path
 
 interface HabitTrackingApiService {
@@ -58,6 +60,23 @@ interface HabitTrackingApiService {
     @GET("/api/habit-entries/")
     suspend fun getAllHabitEntries(): List<HabitEntry>
 
+    @POST("/api/habit-entries/")
+    suspend fun createHabitEntry(
+        @Header("Authorization") token: String,
+        @Body habitEntryRequest: HabitEntryRequest
+    ): HabitEntry
+
+    @PUT("/api/habit-entries/{id}")
+    suspend fun updateHabitEntry(
+        @Path("id") id: Int,
+        @Header("Authorization") token: String,
+        @Body habitEntryRequest: HabitEntryRequest
+    ): HabitEntry
+
+    @GET("/users/me/")
+    suspend fun getUserByToken(
+        @Header("Authorization") token: String,
+    ): UserResponse
 
 
 }

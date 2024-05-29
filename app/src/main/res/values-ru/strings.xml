@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="homepage">Главная</string>
+    <string name="first_our_habit">Сначала мы создаем свои привычки, а потом наши привычки создают нас</string>
+
+    <string name="habits">ПРИВЫЧКИ</string>
+
+    <string name="habit_created_successfully">Привычка создана успешно!</string>
+    <string name="new_habit">Новая привычка</string>
+    <string name="enter_habit_name">Введите название привычки</string>
+    <string name="habit_frequency">Частота привычки</string>
+
+    <string name="sun">Вс</string>
+    <string name="mon">Пн</string>
+    <string name="tue">Вт</string>
+    <string name="wed">Ср</string>
+    <string name="thu">Чт</string>
+    <string name="fri">Пт</string>
+    <string name="sat">Сб</string>
+
+    <string name="reminder">Напоминание</string>
+    <string name="notification">Уведомление</string>
+    <string name="start_this_habit">Начать привычку</string>
+    <string name="click_to_save">Нажмите чтобы сохранить</string>
+    <string name="change_reminder">Изменить напоминание</string>
+    <string name="cancel">Отмена</string>
+    <string name="save">Save</string>
+
+    <string name="profile">Профиль</string>
+    <string name="name">Имя</string>
+    <string name="billing_methods">Способы оплаты</string>
+    <string name="longest_streak">В ударе</string>
+    <string name="days20">20 Дней</string>
+
+    <string name="settings">Настройки</string>
+    <string name="check_your_profile">Посмотрите свой профиль</string>
+    <string name="view">Смотреть</string>
+    <string name="general">Общее</string>
+    <string name="customize_notification">Настроить уведомления</string>
+    <string name="language">Язык</string>
+    <string name="switch_language">Сменить язык</string>
+    <string name="support">Поддержка</string>
+    <string name="contact">Контакт</string>
+    <string name="feedback">Обратная связь</string>
+    <string name="privacy_policy">Политика конфеденциальности</string>
+    <string name="exit">Выйти</string>
+
+    <string name="habit_info">О привычке</string>
+    <string name="repeat_everyday">Каждый день</string>
+    <string name="analytics">Аналитика</string>
+    <string name="current_streak">Сейчас в Ударе</string>
+    <string name="completion_rate">Выполнено</string>
+    <string name="avg_easiness_score">Средний Балл Легкости</string>
+
+    <string name="mark_as_complete">Отметить выполненным</string>
+    <string name="mark_as_missed">Отметить пропушенным</string>
+
+    <string name="congratulations">Поздравляем!</string>
+    <string name="keep_in_that_way">Продалжайте в том же духе!</string>
+    <string name="create_new_habit_reminder">Создать новую привычку</string>
+    <string name="continue_text">Продолжить</string>
+
+
+
+
+</resources>

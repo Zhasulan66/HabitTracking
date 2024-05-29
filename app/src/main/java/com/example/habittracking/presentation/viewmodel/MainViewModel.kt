@@ -256,5 +256,62 @@ class MainViewModel @Inject constructor(
         }
     }
 
+    //create habit entry
+    private val _createHabitEntryState = MutableStateFlow<Resource<HabitEntry>>(Resource.Initial)
+    val createHabitEntryState: StateFlow<Resource<HabitEntry>> = _createHabitEntryState.asStateFlow()
+
+    fun createHabitEntry(
+        token: String,
+        habitEntryRequest: HabitEntryRequest
+    ) {
+        viewModelScope.launch {
+            _createHabitEntryState.value = Resource.Loading
+            try {
+                val habitEntry = repository.createHabitEntry("Token $token", habitEntryRequest)
+                _createHabitEntryState.value = Resource.Success(habitEntry)
+            } catch (e: Exception) {
+                _createHabitEntryState.value = Resource.Error(e)
+            }
+        }
+    }
+
+    //update habit entry
+    private val _updateHabitEntryState = MutableStateFlow<Resource<HabitEntry>>(Resource.Initial)
+    val updateHabitEntryState: StateFlow<Resource<HabitEntry>> = _updateHabitEntryState.asStateFlow()
+
+    fun updateHabitEntry(
+        id: Int,
+        token: String,
+        habitEntryRequest: HabitEntryRequest
+    ) {
+        viewModelScope.launch {
+            _updateHabitEntryState.value = Resource.Loading
+            try {
+                val habitEntry = repository.updateHabitEntry(id, "Token $token", habitEntryRequest)
+                _updateHabitEntryState.value = Resource.Success(habitEntry)
+            } catch (e: Exception) {
+                _updateHabitEntryState.value = Resource.Error(e)
+            }
+        }
+    }
+
+    //userState
+    private val _userState = MutableStateFlow<Resource<UserResponse>>(Resource.Initial)
+    val userState: StateFlow<Resource<UserResponse>> = _userState.asStateFlow()
+
+    fun fetchUserByToken(
+        token: String,
+    ) {
+        viewModelScope.launch {
+            _userState.value = Resource.Loading
+            try {
+                val userResponse = repository.getUserByToken("Token $token")
+                _userState.value = Resource.Success(userResponse)
+            } catch (e: Exception) {
+                _userState.value = Resource.Error(e)
+            }
+        }
+    }
+
 
 }

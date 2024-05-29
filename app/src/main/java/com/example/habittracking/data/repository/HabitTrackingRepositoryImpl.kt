@@ -4,6 +4,7 @@ import com.example.habittracking.data.remote.HabitTrackingApiService
 import com.example.habittracking.domain.model.Analytics
 import com.example.habittracking.domain.model.Habit
 import com.example.habittracking.domain.model.HabitEntry
+import com.example.habittracking.domain.model.HabitEntryRequest
 import com.example.habittracking.domain.model.HabitRequest
 import com.example.habittracking.domain.model.auth.*
 import com.example.habittracking.domain.repository.HabitTrackingRepository
@@ -60,5 +61,24 @@ class HabitTrackingRepositoryImpl(
 
     override suspend fun getAllHabitEntries(): List<HabitEntry> {
         return api.getAllHabitEntries()
+    }
+
+    override suspend fun createHabitEntry(
+        token: String,
+        habitEntryRequest: HabitEntryRequest
+    ): HabitEntry {
+        return api.createHabitEntry(token, habitEntryRequest)
+    }
+
+    override suspend fun updateHabitEntry(
+        id: Int,
+        token: String,
+        habitEntryRequest: HabitEntryRequest
+    ): HabitEntry {
+        return api.updateHabitEntry(id, token, habitEntryRequest)
+    }
+
+    override suspend fun getUserByToken(token: String): UserResponse {
+        return api.getUserByToken(token)
     }
 }

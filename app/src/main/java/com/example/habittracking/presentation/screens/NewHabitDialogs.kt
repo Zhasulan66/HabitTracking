@@ -37,9 +37,11 @@ import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.habittracking.R
 import com.example.habittracking.common.Contacts
 import com.example.habittracking.common.Contacts.Companion.MANROPE_FONT_FAMILY
 import com.example.habittracking.presentation.navigation.Screen
@@ -145,7 +147,7 @@ fun ChooseReminderDialog(
                         contentAlignment = Alignment.Center
                     ) {
                         Text(
-                            text = "Add Reminder",
+                            text = stringResource(id = R.string.change_reminder),
                             fontFamily = MANROPE_FONT_FAMILY,
                             fontSize = 16.sp,
                             fontWeight = FontWeight.Bold,
@@ -198,7 +200,7 @@ fun AddReminderDialog(
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
                 Text(
-                    text = "Cancel",
+                    text = stringResource(id = R.string.cancel),
                     fontFamily = MANROPE_FONT_FAMILY,
                     fontSize = 16.sp,
                     fontWeight = FontWeight.Bold,
@@ -209,14 +211,14 @@ fun AddReminderDialog(
                         }
                 )
                 Text(
-                    text = "Add Reminder",
+                    text = stringResource(id = R.string.change_reminder),
                     fontFamily = MANROPE_FONT_FAMILY,
                     fontSize = 18.sp,
                     fontWeight = FontWeight.Bold,
                     color = PurpleDark
                 )
                 Text(
-                    text = "Save",
+                    text = stringResource(id = R.string.save),
                     fontFamily = MANROPE_FONT_FAMILY,
                     fontSize = 16.sp,
                     fontWeight = FontWeight.Bold,
@@ -236,7 +238,8 @@ fun AddReminderDialog(
         }
 
         Row(
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier
+                .fillMaxWidth()
                 .height(60.dp)
                 .align(Alignment.BottomCenter)
         ) {

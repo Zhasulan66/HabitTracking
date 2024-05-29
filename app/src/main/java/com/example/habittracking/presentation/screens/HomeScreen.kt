@@ -31,6 +31,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -71,7 +72,8 @@ fun HomeScreen(
         Image(
             painter = painterResource(R.drawable.home_bg),
             contentDescription = "img",
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier
+                .fillMaxWidth()
                 .align(Alignment.BottomCenter),
             contentScale = ContentScale.FillWidth
         )
@@ -94,7 +96,14 @@ fun HomeScreen(
                     modifier = Modifier
                         .size(40.dp)
                         .clip(CircleShape)
-                        .background(Color(PurpleDark.red, PurpleDark.green, PurpleDark.blue, alpha = 0.1f))
+                        .background(
+                            Color(
+                                PurpleDark.red,
+                                PurpleDark.green,
+                                PurpleDark.blue,
+                                alpha = 0.1f
+                            )
+                        )
                         .clickable {
 
                         },
@@ -108,7 +117,7 @@ fun HomeScreen(
 
                 //screen title
                 Text(
-                    text = "Homepage",
+                    text = stringResource(id = R.string.homepage),
                     fontFamily = MANROPE_FONT_FAMILY,
                     fontSize = 18.sp,
                     fontWeight = FontWeight.Bold,
@@ -118,7 +127,14 @@ fun HomeScreen(
                     modifier = Modifier
                         .size(40.dp)
                         .clip(CircleShape)
-                        .background(Color(PurpleDark.red, PurpleDark.green, PurpleDark.blue, alpha = 0.1f))
+                        .background(
+                            Color(
+                                PurpleDark.red,
+                                PurpleDark.green,
+                                PurpleDark.blue,
+                                alpha = 0.1f
+                            )
+                        )
                 )
             }
             Spacer(modifier = Modifier.height(20.dp))
@@ -133,7 +149,8 @@ fun HomeScreen(
                 Image(
                     painter = painterResource(R.drawable.home_card_img),
                     contentDescription = "img",
-                    modifier = Modifier.fillMaxHeight()
+                    modifier = Modifier
+                        .fillMaxHeight()
                         .align(Alignment.CenterEnd),
                     contentScale = ContentScale.FillHeight
                 )
@@ -144,7 +161,7 @@ fun HomeScreen(
                         .padding(horizontal = 10.dp, vertical = 20.dp)
                 ){
                     Text(
-                        text = "We first make our habits, and then our habits makes us",
+                        text = stringResource(id = R.string.first_our_habit),
                         fontFamily = KLASIK_FONT_FAMILY,
                         fontSize = 18.sp,
                         color = PurpleDark
@@ -288,7 +305,7 @@ fun HabitListScreen(
                     verticalAlignment = Alignment.CenterVertically
                 ){
                     Text(
-                        text = "HABITS",
+                        text = stringResource(id = R.string.habits),
                         fontSize = 14.sp,
                         fontWeight = FontWeight.Bold,
                         fontFamily = MANROPE_FONT_FAMILY,

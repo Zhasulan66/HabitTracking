@@ -1,5 +1,7 @@
 package com.example.habittracking.presentation.screens
 
+import android.content.Intent
+import android.net.Uri
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -28,7 +30,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -37,6 +41,7 @@ import androidx.navigation.NavController
 import com.example.habittracking.R
 import com.example.habittracking.common.Contacts
 import com.example.habittracking.common.Contacts.Companion.MANROPE_FONT_FAMILY
+import com.example.habittracking.presentation.LanguageManager
 import com.example.habittracking.presentation.navigation.NavigationView
 import com.example.habittracking.presentation.navigation.Screen
 import com.example.habittracking.presentation.ui.theme.OrangeFD
@@ -46,9 +51,11 @@ import com.example.habittracking.presentation.viewmodel.MainViewModel
 
 @Composable
 fun SettingScreen(
-    navController: NavController
+    navController: NavController,
+    languageManager: LanguageManager
 ) {
     val viewModel = hiltViewModel<MainViewModel>()
+    val context = LocalContext.current
     Box(
         modifier = Modifier
             .fillMaxSize()
@@ -68,13 +75,20 @@ fun SettingScreen(
                     .fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
-            ){
+            ) {
                 //back btn
                 Box(
                     modifier = Modifier
                         .size(40.dp)
                         .clip(CircleShape)
-                        .background(Color(PurpleDark.red, PurpleDark.green, PurpleDark.blue, alpha = 0.1f))
+                        .background(
+                            Color(
+                                PurpleDark.red,
+                                PurpleDark.green,
+                                PurpleDark.blue,
+                                alpha = 0.1f
+                            )
+                        )
                         .clickable {
                             navController.popBackStack()
                         },
@@ -88,7 +102,7 @@ fun SettingScreen(
 
                 //screen title
                 Text(
-                    text = "Settings",
+                    text = stringResource(id = R.string.settings),
                     fontFamily = MANROPE_FONT_FAMILY,
                     fontSize = 18.sp,
                     fontWeight = FontWeight.Bold,
@@ -113,7 +127,8 @@ fun SettingScreen(
                 Image(
                     painter = painterResource(R.drawable.setting_card_img),
                     contentDescription = "img",
-                    modifier = Modifier.fillMaxHeight()
+                    modifier = Modifier
+                        .fillMaxHeight()
                         .align(Alignment.CenterEnd),
                     contentScale = ContentScale.FillHeight
                 )
@@ -121,16 +136,16 @@ fun SettingScreen(
                 Column(
                     modifier = Modifier
                         .padding(10.dp)
-                ){
+                ) {
                     Text(
-                        text = "Check Your Profile",
+                        text = stringResource(id = R.string.check_your_profile),
                         fontFamily = MANROPE_FONT_FAMILY,
                         fontSize = 20.sp,
                         fontWeight = FontWeight.Bold,
                         color = PurpleDark
                     )
                     Text(
-                        text = "jonathansmith@gmail.com",
+                        text = "youremail@gmail.com",
                         fontFamily = MANROPE_FONT_FAMILY,
                         fontSize = 12.sp,
                         fontWeight = FontWeight.Medium,
@@ -144,16 +159,16 @@ fun SettingScreen(
                             .clip(RoundedCornerShape(10.dp))
                             .background(OrangeFD)
                             .clickable {
-                                navController.navigate(Screen.ProfileScreen.route){
-                                    popUpTo(Screen.SettingScreen.route){
+                                navController.navigate(Screen.ProfileScreen.route) {
+                                    popUpTo(Screen.SettingScreen.route) {
                                         inclusive = true
                                     }
                                 }
                             },
                         contentAlignment = Alignment.Center
-                    ){
+                    ) {
                         Text(
-                            text = "View",
+                            text = stringResource(id = R.string.view),
                             fontFamily = MANROPE_FONT_FAMILY,
                             fontSize = 14.sp,
                             fontWeight = FontWeight.Bold,
@@ -165,7 +180,7 @@ fun SettingScreen(
             Spacer(modifier = Modifier.height(10.dp))
 
             Text(
-                text = "General",
+                text = stringResource(id = R.string.general),
                 fontFamily = MANROPE_FONT_FAMILY,
                 fontWeight = FontWeight.Medium,
                 fontSize = 16.sp,
@@ -182,18 +197,25 @@ fun SettingScreen(
                     .padding(horizontal = 10.dp, vertical = 8.dp),
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
-            ){
+            ) {
                 Row(
                     modifier = Modifier,
                     verticalAlignment = Alignment.CenterVertically
-                ){
+                ) {
                     Box(
                         modifier = Modifier
                             .size(38.dp)
                             .clip(RoundedCornerShape(10.dp))
-                            .background(Color(OrangeFD.red, OrangeFD.green, OrangeFD.blue, alpha = 0.1f)),
+                            .background(
+                                Color(
+                                    OrangeFD.red,
+                                    OrangeFD.green,
+                                    OrangeFD.blue,
+                                    alpha = 0.1f
+                                )
+                            ),
                         contentAlignment = Alignment.Center
-                    ){
+                    ) {
                         Image(
                             painter = painterResource(R.drawable.ic_notification),
                             contentDescription = "img"
@@ -203,14 +225,14 @@ fun SettingScreen(
                     Spacer(modifier = Modifier.width(10.dp))
                     Column {
                         Text(
-                            text = "Notifications",
+                            text = stringResource(id = R.string.notification),
                             fontFamily = MANROPE_FONT_FAMILY,
                             fontSize = 16.sp,
                             fontWeight = FontWeight.Medium,
                             color = PurpleDark
                         )
                         Text(
-                            text = "Customize notification",
+                            text = stringResource(id = R.string.customize_notification),
                             fontFamily = MANROPE_FONT_FAMILY,
                             fontSize = 12.sp,
                             fontWeight = FontWeight.Medium,
@@ -224,12 +246,12 @@ fun SettingScreen(
                     imageVector = Icons.Default.KeyboardArrowRight,
                     contentDescription = "icon",
                     tint = PurpleDark,
-                    modifier = Modifier.clickable {  }
+                    modifier = Modifier.clickable { }
                 )
             }
             Spacer(modifier = Modifier.height(10.dp))
 
-            //more customization
+            //language
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -238,18 +260,25 @@ fun SettingScreen(
                     .padding(horizontal = 10.dp, vertical = 8.dp),
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
-            ){
+            ) {
                 Row(
                     modifier = Modifier,
                     verticalAlignment = Alignment.CenterVertically
-                ){
+                ) {
                     Box(
                         modifier = Modifier
                             .size(38.dp)
                             .clip(RoundedCornerShape(10.dp))
-                            .background(Color(OrangeFD.red, OrangeFD.green, OrangeFD.blue, alpha = 0.1f)),
+                            .background(
+                                Color(
+                                    OrangeFD.red,
+                                    OrangeFD.green,
+                                    OrangeFD.blue,
+                                    alpha = 0.1f
+                                )
+                            ),
                         contentAlignment = Alignment.Center
-                    ){
+                    ) {
                         Image(
                             painter = painterResource(R.drawable.ic_more),
                             contentDescription = "img"
@@ -259,14 +288,14 @@ fun SettingScreen(
                     Spacer(modifier = Modifier.width(10.dp))
                     Column {
                         Text(
-                            text = "More customiztion",
+                            text = stringResource(id = R.string.language),
                             fontFamily = MANROPE_FONT_FAMILY,
                             fontSize = 16.sp,
                             fontWeight = FontWeight.Medium,
                             color = PurpleDark
                         )
                         Text(
-                            text = "Customize it more to fit your usage",
+                            text = stringResource(id = R.string.switch_language),
                             fontFamily = MANROPE_FONT_FAMILY,
                             fontSize = 12.sp,
                             fontWeight = FontWeight.Medium,
@@ -276,17 +305,41 @@ fun SettingScreen(
 
                 }
 
-                Icon(
-                    imageVector = Icons.Default.KeyboardArrowRight,
-                    contentDescription = "icon",
-                    tint = PurpleDark,
-                    modifier = Modifier.clickable {  }
-                )
+                Row(
+                    modifier = Modifier
+                        .clickable {
+                            if (languageManager.getCurrentLanguage() == "ru") {
+                                languageManager.setLanguage("en")
+                                languageManager.restartActivity()
+                            } else {
+                                languageManager.setLanguage("ru")
+                                languageManager.restartActivity()
+                            }
+                        },
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text(
+                        text = if (languageManager.getCurrentLanguage() == "ru") {
+                            "RU"
+                        } else {
+                            "EN"
+                        },
+                        fontFamily = MANROPE_FONT_FAMILY,
+                        fontSize = 16.sp,
+                        fontWeight = FontWeight.Medium,
+                        color = PurpleDark
+                    )
+                    Icon(
+                        imageVector = Icons.Default.KeyboardArrowRight,
+                        contentDescription = "icon",
+                        tint = PurpleDark
+                    )
+                }
             }
             Spacer(modifier = Modifier.height(10.dp))
 
             Text(
-                text = "Support",
+                text = stringResource(id = R.string.support),
                 fontFamily = MANROPE_FONT_FAMILY,
                 fontWeight = FontWeight.Medium,
                 fontSize = 16.sp,
@@ -303,18 +356,25 @@ fun SettingScreen(
                     .padding(horizontal = 10.dp, vertical = 4.dp),
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
-            ){
+            ) {
                 Row(
                     modifier = Modifier,
                     verticalAlignment = Alignment.CenterVertically
-                ){
+                ) {
                     Box(
                         modifier = Modifier
                             .size(38.dp)
                             .clip(RoundedCornerShape(10.dp))
-                            .background(Color(OrangeFD.red, OrangeFD.green, OrangeFD.blue, alpha = 0.1f)),
+                            .background(
+                                Color(
+                                    OrangeFD.red,
+                                    OrangeFD.green,
+                                    OrangeFD.blue,
+                                    alpha = 0.1f
+                                )
+                            ),
                         contentAlignment = Alignment.Center
-                    ){
+                    ) {
                         Image(
                             painter = painterResource(R.drawable.ic_contact),
                             contentDescription = "img"
@@ -323,7 +383,7 @@ fun SettingScreen(
 
                     Spacer(modifier = Modifier.width(10.dp))
                     Text(
-                        text = "Contact",
+                        text = stringResource(id = R.string.contact),
                         fontFamily = MANROPE_FONT_FAMILY,
                         fontSize = 16.sp,
                         fontWeight = FontWeight.Medium,
@@ -335,7 +395,14 @@ fun SettingScreen(
                     imageVector = Icons.Default.KeyboardArrowRight,
                     contentDescription = "icon",
                     tint = PurpleDark,
-                    modifier = Modifier.clickable {  }
+                    modifier = Modifier.clickable {
+                        val intent = Intent(Intent.ACTION_SENDTO).apply {
+                            data = Uri.parse("mailto:")
+                            putExtra(Intent.EXTRA_EMAIL, arrayOf("habit0support@gmail.com"))
+                            putExtra(Intent.EXTRA_SUBJECT, "Habit App Support")
+                        }
+                        context.startActivity(intent)
+                    }
                 )
             }
             Spacer(modifier = Modifier.height(10.dp))
@@ -349,16 +416,23 @@ fun SettingScreen(
                     .padding(horizontal = 10.dp, vertical = 4.dp),
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
-            ){
+            ) {
                 Row(
                     modifier = Modifier,
                     verticalAlignment = Alignment.CenterVertically
-                ){
+                ) {
                     Box(
                         modifier = Modifier
                             .size(38.dp)
                             .clip(RoundedCornerShape(10.dp))
-                            .background(Color(OrangeFD.red, OrangeFD.green, OrangeFD.blue, alpha = 0.1f)),
+                            .background(
+                                Color(
+                                    OrangeFD.red,
+                                    OrangeFD.green,
+                                    OrangeFD.blue,
+                                    alpha = 0.1f
+                                )
+                            ),
                         contentAlignment = Alignment.Center
                     ) {
                         Image(
@@ -368,8 +442,8 @@ fun SettingScreen(
                     }
                     Spacer(modifier = Modifier.width(10.dp))
                     Text(
-                        text = "Feedback",
-                        fontFamily = Contacts.MANROPE_FONT_FAMILY,
+                        text = stringResource(id = R.string.feedback),
+                        fontFamily = MANROPE_FONT_FAMILY,
                         fontSize = 16.sp,
                         fontWeight = FontWeight.Medium,
                         color = PurpleDark
@@ -380,7 +454,10 @@ fun SettingScreen(
                     imageVector = Icons.Default.KeyboardArrowRight,
                     contentDescription = "icon",
                     tint = PurpleDark,
-                    modifier = Modifier.clickable {  }
+                    modifier = Modifier.clickable {
+                        val intent = Intent(Intent.ACTION_VIEW, Uri.parse("https://play.google.com/store/apps/"))
+                        context.startActivity(intent)
+                    }
                 )
             }
             Spacer(modifier = Modifier.height(10.dp))
@@ -394,16 +471,23 @@ fun SettingScreen(
                     .padding(horizontal = 10.dp, vertical = 4.dp),
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
-            ){
+            ) {
                 Row(
                     modifier = Modifier,
                     verticalAlignment = Alignment.CenterVertically
-                ){
+                ) {
                     Box(
                         modifier = Modifier
                             .size(38.dp)
                             .clip(RoundedCornerShape(10.dp))
-                            .background(Color(OrangeFD.red, OrangeFD.green, OrangeFD.blue, alpha = 0.1f)),
+                            .background(
+                                Color(
+                                    OrangeFD.red,
+                                    OrangeFD.green,
+                                    OrangeFD.blue,
+                                    alpha = 0.1f
+                                )
+                            ),
                         contentAlignment = Alignment.Center
                     ) {
                         Image(
@@ -413,11 +497,12 @@ fun SettingScreen(
                     }
                     Spacer(modifier = Modifier.width(10.dp))
                     Text(
-                        text = "Privacy Policy",
-                        fontFamily = Contacts.MANROPE_FONT_FAMILY,
+                        text = stringResource(id = R.string.privacy_policy),
+                        fontFamily = MANROPE_FONT_FAMILY,
                         fontSize = 16.sp,
                         fontWeight = FontWeight.Medium,
-                        color = PurpleDark
+                        color = PurpleDark,
+                        modifier = Modifier.fillMaxWidth(0.8f)
                     )
                 }
 
@@ -425,7 +510,7 @@ fun SettingScreen(
                     imageVector = Icons.Default.KeyboardArrowRight,
                     contentDescription = "icon",
                     tint = PurpleDark,
-                    modifier = Modifier.clickable {  }
+                    modifier = Modifier.clickable { }
                 )
             }
             Spacer(modifier = Modifier.height(10.dp))
@@ -439,16 +524,23 @@ fun SettingScreen(
                     .padding(horizontal = 10.dp, vertical = 4.dp),
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
-            ){
+            ) {
                 Row(
                     modifier = Modifier,
                     verticalAlignment = Alignment.CenterVertically
-                ){
+                ) {
                     Box(
                         modifier = Modifier
                             .size(38.dp)
                             .clip(RoundedCornerShape(10.dp))
-                            .background(Color(OrangeFD.red, OrangeFD.green, OrangeFD.blue, alpha = 0.1f)),
+                            .background(
+                                Color(
+                                    OrangeFD.red,
+                                    OrangeFD.green,
+                                    OrangeFD.blue,
+                                    alpha = 0.1f
+                                )
+                            ),
                         contentAlignment = Alignment.Center
                     ) {
                         Image(
@@ -458,7 +550,7 @@ fun SettingScreen(
                     }
                     Spacer(modifier = Modifier.width(10.dp))
                     Text(
-                        text = "Exit",
+                        text = stringResource(id = R.string.exit),
                         fontFamily = MANROPE_FONT_FAMILY,
                         fontSize = 16.sp,
                         fontWeight = FontWeight.Medium,
@@ -471,8 +563,8 @@ fun SettingScreen(
                     contentDescription = "icon",
                     tint = PurpleDark,
                     modifier = Modifier.clickable {
-                        navController.navigate(Screen.LoginScreen.route){
-                            popUpTo(Screen.SettingScreen.route){
+                        navController.navigate(Screen.LoginScreen.route) {
+                            popUpTo(Screen.SettingScreen.route) {
                                 inclusive = true
                             }
                         }
@@ -481,7 +573,6 @@ fun SettingScreen(
                 )
             }
             Spacer(modifier = Modifier.height(10.dp))
-
 
 
         }
