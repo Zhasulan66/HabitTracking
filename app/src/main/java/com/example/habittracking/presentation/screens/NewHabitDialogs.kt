@@ -54,7 +54,7 @@ fun ChooseReminderDialog(
     onDismiss: () -> Unit,
     onPositiveClick: () -> Unit,
     modifier: Modifier = Modifier,
-    reminderList: MutableList<String>
+    reminderTime: String
 ) {
     Box(
         modifier = Modifier
@@ -82,59 +82,56 @@ fun ChooseReminderDialog(
             LazyColumn(
                 modifier = Modifier.fillMaxWidth()
             ) {
-                item{
-                    val chunkedReminder = reminderList.chunked(3)
+                item {
 
-                    for(reminder in chunkedReminder){
-                        Row(
-                            modifier = Modifier.fillMaxWidth(),
-                            horizontalArrangement = Arrangement.SpaceBetween
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween
+                    ) {
+                        var isChecked by remember { mutableStateOf(false) }
+                        Column(
+                            modifier = Modifier
+                                .width(100.dp)
+                                .clip(RoundedCornerShape(10.dp))
+                                .background(if (isChecked) OrangeWhite else GrayC8)
+                                .padding(10.dp),
+                            horizontalAlignment = Alignment.CenterHorizontally
                         ) {
-                            reminder.forEach { reminderText ->
-                                var isChecked by remember { mutableStateOf(false) }
-                                Column(
-                                    modifier = Modifier
-                                        .width(100.dp)
-                                        .clip(RoundedCornerShape(10.dp))
-                                        .background(if (isChecked) OrangeWhite else GrayC8)
-                                        .padding(10.dp),
-                                    horizontalAlignment = Alignment.CenterHorizontally
-                                ) {
-                                    Text(
-                                        text = reminderText,
-                                        fontFamily = MANROPE_FONT_FAMILY,
-                                        fontSize = 16.sp,
-                                        fontWeight = FontWeight.Bold,
-                                        color = if (isChecked) OrangeFD else PurpleDark
-                                    )
-                                    Switch(
-                                        checked = isChecked,
-                                        onCheckedChange = { isChecked = it },
-                                        thumbContent = {
-                                            Box(
-                                                modifier = Modifier
-                                                    .height(8.dp)
-                                                    .aspectRatio(1f)
-                                                    .clip(CircleShape)
-                                                    .background(if (isChecked) OrangeFD else PurpleDark)
-                                            )
-                                        },
-                                        colors = SwitchDefaults.colors(
-                                            checkedThumbColor = OrangeFD,
-                                            uncheckedThumbColor = PurpleDark,
-                                            checkedTrackColor = Color.LightGray,
-                                            uncheckedTrackColor = Color.LightGray,
-                                            checkedBorderColor = Color.LightGray,
-                                            uncheckedBorderColor = Color.LightGray
-                                        ),
+                            Text(
+                                text = reminderTime,
+                                fontFamily = MANROPE_FONT_FAMILY,
+                                fontSize = 16.sp,
+                                fontWeight = FontWeight.Bold,
+                                color = if (isChecked) OrangeFD else PurpleDark
+                            )
+                            Switch(
+                                checked = isChecked,
+                                onCheckedChange = { isChecked = it },
+                                thumbContent = {
+                                    Box(
                                         modifier = Modifier
-                                            .scale(0.8f)
+                                            .height(8.dp)
+                                            .aspectRatio(1f)
+                                            .clip(CircleShape)
+                                            .background(if (isChecked) OrangeFD else PurpleDark)
                                     )
-                                }
-                            }
+                                },
+                                colors = SwitchDefaults.colors(
+                                    checkedThumbColor = OrangeFD,
+                                    uncheckedThumbColor = PurpleDark,
+                                    checkedTrackColor = Color.LightGray,
+                                    uncheckedTrackColor = Color.LightGray,
+                                    checkedBorderColor = Color.LightGray,
+                                    uncheckedBorderColor = Color.LightGray
+                                ),
+                                modifier = Modifier
+                                    .scale(0.8f)
+                            )
                         }
-                        Spacer(modifier = Modifier.height(10.dp))
+
                     }
+                    Spacer(modifier = Modifier.height(10.dp))
+
 
                     Box(
                         modifier = Modifier
@@ -226,8 +223,8 @@ fun AddReminderDialog(
                     color = OrangeFC,
                     modifier = Modifier
                         .clickable {
-                            if(selectedTime.value != "00:00"){
-                                onPositiveClick(selectedTime.value + if(isAm) "AM" else "PM")
+                            if (selectedTime.value != "00:00") {
+                                onPositiveClick(selectedTime.value + if (isAm) "AM" else "PM")
                             }
                         }
                 )
@@ -293,7 +290,10 @@ fun TimePicker(selectedTime: MutableState<String>) {
     val minuteState = rememberLazyListState()
 
     // Update selected time when the selected item changes
-    LaunchedEffect(hourState.firstVisibleItemScrollOffset, minuteState.firstVisibleItemScrollOffset) {
+    LaunchedEffect(
+        hourState.firstVisibleItemScrollOffset,
+        minuteState.firstVisibleItemScrollOffset
+    ) {
         val hourIndex = getCenteredIndex(hourState, hours.size)
         val minuteIndex = getCenteredIndex(minuteState, minutes.size)
         selectedTime.value = String.format("%02d:%02d", hourIndex, minuteIndex)

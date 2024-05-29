@@ -147,9 +147,18 @@ fun Navigation() {
         }
 
         //HabitInfoScreen
-        composable(route = Screen.HabitInfoScreen.route) {
+        composable(route = Screen.HabitInfoScreen.route + "/{habitId}",
+            arguments = listOf(
+                navArgument("habitId"){
+                    type = NavType.IntType
+                    defaultValue = 0
+                    nullable = false
+                }
+            )
+        ) { entry ->
             HabitInfoScreen(
-                navController = navController
+                navController = navController,
+                habitId = entry.arguments!!.getInt("habitId")
             )
         }
 

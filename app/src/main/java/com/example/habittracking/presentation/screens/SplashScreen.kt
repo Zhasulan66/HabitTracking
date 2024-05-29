@@ -13,6 +13,8 @@ import androidx.compose.foundation.layout.offset
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -35,7 +37,7 @@ fun SplashScreen (
     navController: NavController
 ){
     val viewModel = hiltViewModel<MainViewModel>()
-    //val savedUserId: String? by viewModel.readUserId().collectAsState(initial = null)
+    val savedToken: String? by viewModel.readToken().collectAsState(initial = null)
 
     Box(
         modifier = Modifier.fillMaxSize()
@@ -67,9 +69,9 @@ fun SplashScreen (
     LaunchedEffect(key1 = true) {
         delay(2000)
         navController.navigate(
-            //if(savedUserId == null)
+            if(savedToken == null)
                 Screen.OnboardingScreen.route
-            //else Screen.HomeScreen.route)
+            else Screen.HomeScreen.route
         ){
             popUpTo(Screen.SplashScreen.route) {
                 inclusive = true

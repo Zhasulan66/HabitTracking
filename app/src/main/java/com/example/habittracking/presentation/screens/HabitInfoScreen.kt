@@ -27,6 +27,7 @@ import androidx.compose.material3.Switch
 import androidx.compose.material3.SwitchDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -49,6 +50,9 @@ import com.example.habittracking.R
 import com.example.habittracking.common.Contacts
 import com.example.habittracking.common.Contacts.Companion.KLASIK_FONT_FAMILY
 import com.example.habittracking.common.Contacts.Companion.MANROPE_FONT_FAMILY
+import com.example.habittracking.domain.model.Analytics
+import com.example.habittracking.domain.model.Habit
+import com.example.habittracking.domain.model.Resource
 import com.example.habittracking.presentation.navigation.NavigationView
 import com.example.habittracking.presentation.navigation.Screen
 import com.example.habittracking.presentation.ui.theme.Blue29
@@ -58,12 +62,80 @@ import com.example.habittracking.presentation.ui.theme.OrangeFD
 import com.example.habittracking.presentation.ui.theme.OrangeWhite
 import com.example.habittracking.presentation.ui.theme.PurpleDark
 import com.example.habittracking.presentation.viewmodel.MainViewModel
+import java.time.LocalTime
+import java.time.format.DateTimeFormatter
+import java.util.Locale
 
 @Composable
 fun HabitInfoScreen(
-    navController: NavController
+    navController: NavController,
+    habitId: Int
 ) {
+
     val viewModel = hiltViewModel<MainViewModel>()
+    val habitInfoState by viewModel.habitInfoState.collectAsState()
+    val analyticsState by viewModel.analyticsState.collectAsState()
+
+    when (habitInfoState) {
+        is Resource.Loading -> {
+            LoadingScreen()
+        }
+
+        is Resource.Error -> {
+            ErrorScreen(
+                modifier = Modifier,
+                retryAction = {
+                    navController.navigate(route = navController.currentDestination?.route ?: ""){
+                        popUpTo(navController.previousBackStackEntry?.destination?.id ?: return@navigate)
+                    }
+                }
+            )
+        }
+
+        is Resource.Success -> {
+            when (analyticsState) {
+                is Resource.Loading -> {
+                    LoadingScreen()
+                }
+
+                is Resource.Error -> {
+                    ErrorScreen(
+                        modifier = Modifier,
+                        retryAction = {
+                            navController.navigate(
+                                route = navController.currentDestination?.route ?: ""
+                            ) {
+                                popUpTo(
+                                    navController.previousBackStackEntry?.destination?.id
+                                        ?: return@navigate
+                                )
+                            }
+                        }
+                    )
+                }
+
+                is Resource.Success -> {
+                    val analytics = (analyticsState as Resource.Success<Analytics>).data
+                    val habit = (habitInfoState as Resource.Success<Habit>).data
+                    HabitInfoSuccess(navController, habit, analytics)
+                }
+
+                else -> {}
+            }
+        }
+        else -> {
+            viewModel.fetchAnalytics(1)
+            viewModel.fetchHabitById(habitId)
+        }
+    }
+}
+
+@Composable
+fun HabitInfoSuccess(
+    navController: NavController,
+    habit: Habit,
+    analytics: Analytics
+) {
     var showHabitCompleteDialog by remember { mutableStateOf(false) }
 
     Box(
@@ -170,7 +242,7 @@ fun HabitInfoScreen(
                         .fillMaxWidth()
                 ) {
                     Text(
-                        text = "Read a Book",
+                        text = habit.habitName,
                         fontFamily = MANROPE_FONT_FAMILY,
                         fontSize = 16.sp,
                         fontWeight = FontWeight.Bold,
@@ -203,7 +275,7 @@ fun HabitInfoScreen(
                         )
                         Spacer(modifier = Modifier.width(8.dp))
                         Text(
-                            text = "Reminders: 5:00 am",
+                            text = "Reminders: ${convertTo12HourFormat(habit.reminderTime)}",
                             fontFamily = MANROPE_FONT_FAMILY,
                             fontSize = 12.sp,
                             fontWeight = FontWeight.Medium,
@@ -250,7 +322,7 @@ fun HabitInfoScreen(
                                 .fillMaxWidth(0.8f)
                         ) {
                             Text(
-                                text = "20 days",
+                                text = "${analytics.longestStreak} days",
                                 fontFamily = KLASIK_FONT_FAMILY,
                                 fontSize = 24.sp,
                                 color = PurpleDark
@@ -282,7 +354,7 @@ fun HabitInfoScreen(
                                 .fillMaxWidth(0.8f)
                         ) {
                             Text(
-                                text = "0 days",
+                                text = "${analytics.streak} days",
                                 fontFamily = KLASIK_FONT_FAMILY,
                                 fontSize = 24.sp,
                                 color = PurpleDark
@@ -321,7 +393,7 @@ fun HabitInfoScreen(
                                 .fillMaxWidth(0.8f)
                         ) {
                             Text(
-                                text = "98 %",
+                                text = "${analytics.completionRate} %",
                                 fontFamily = KLASIK_FONT_FAMILY,
                                 fontSize = 24.sp,
                                 color = PurpleDark
@@ -353,7 +425,7 @@ fun HabitInfoScreen(
                                 .fillMaxWidth(0.8f)
                         ) {
                             Text(
-                                text = "7",
+                                text = "${analytics.averageEasinessScore}",
                                 fontFamily = KLASIK_FONT_FAMILY,
                                 fontSize = 24.sp,
                                 color = PurpleDark
@@ -580,4 +652,17 @@ fun HabitCompleteDialog(
         }
     }
 
+}
+
+fun convertTo12HourFormat(time: String): String {
+    // Define the input format
+    val inputFormatter = DateTimeFormatter.ofPattern("HH:mm:ss", Locale.ENGLISH)
+    // Define the output format
+    val outputFormatter = DateTimeFormatter.ofPattern("hh:mm a", Locale.ENGLISH)
+
+    // Parse the input time string
+    val parsedTime = LocalTime.parse(time, inputFormatter)
+
+    // Format the parsed time to the desired output format
+    return parsedTime.format(outputFormatter)
 }

@@ -1,11 +1,19 @@
 package com.example.habittracking.data.remote
 
+import com.example.habittracking.domain.model.Analytics
+import com.example.habittracking.domain.model.Habit
+import com.example.habittracking.domain.model.HabitEntry
+import com.example.habittracking.domain.model.HabitRequest
 import com.example.habittracking.domain.model.auth.*
 import retrofit2.http.Body
+import retrofit2.http.GET
+import retrofit2.http.Header
 import retrofit2.http.POST
+import retrofit2.http.Path
 
 interface HabitTrackingApiService {
 
+    //auth
     @POST("/register/")
     suspend fun registerUser(@Body userRequest: UserRequest): UserResponse
 
@@ -26,4 +34,30 @@ interface HabitTrackingApiService {
 
     @POST("/reset_password/")
     suspend fun resetPassword(@Body resetPasswordRequest: ResetPasswordRequest): ResetPasswordResponse
+
+    //habit
+    @GET("/api/habits/")
+    suspend fun getAllHabits(): List<Habit>
+
+    @POST("/api/habits/")
+    suspend fun createHabit(
+        @Header("Authorization") token: String,
+        @Body habitRequest: HabitRequest
+    ): Habit
+
+    @GET("/api/habits/{id}/")
+    suspend fun getHabitById(
+        @Path("id") id: Int
+    ): Habit
+
+    @GET("/api/analytics/{id}/")
+    suspend fun getAnalyticsById(
+        @Path("id") id: Int
+    ): Analytics
+
+    @GET("/api/habit-entries/")
+    suspend fun getAllHabitEntries(): List<HabitEntry>
+
+
+
 }

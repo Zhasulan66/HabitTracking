@@ -1,5 +1,6 @@
 package com.example.habittracking.presentation.screens
 
+import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -31,6 +32,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -41,6 +43,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
@@ -52,6 +55,9 @@ import com.example.habittracking.R
 import com.example.habittracking.common.Contacts
 import com.example.habittracking.common.Contacts.Companion.KLASIK_FONT_FAMILY
 import com.example.habittracking.common.Contacts.Companion.MANROPE_FONT_FAMILY
+import com.example.habittracking.domain.model.Habit
+import com.example.habittracking.domain.model.HabitRequest
+import com.example.habittracking.domain.model.Resource
 import com.example.habittracking.presentation.navigation.NavigationView
 import com.example.habittracking.presentation.navigation.Screen
 import com.example.habittracking.presentation.ui.theme.OrangeF6
@@ -60,19 +66,67 @@ import com.example.habittracking.presentation.ui.theme.OrangeFD
 import com.example.habittracking.presentation.ui.theme.OrangeWhite
 import com.example.habittracking.presentation.ui.theme.PurpleDark
 import com.example.habittracking.presentation.viewmodel.MainViewModel
+import java.time.LocalTime
+import java.time.format.DateTimeFormatter
+import java.util.Locale
+
+@Composable
+fun NewHabitScreen(
+    navController: NavController
+){
+    val viewModel = hiltViewModel<MainViewModel>()
+    val createHabitState by viewModel.createHabitState.collectAsState()
+
+    when (createHabitState) {
+        is Resource.Loading -> {
+            LoadingScreen()
+        }
+
+        is Resource.Error -> {
+            ErrorScreen(
+                modifier = Modifier,
+                retryAction = {
+                    navController.navigate(route = navController.currentDestination?.route ?: ""){
+                        popUpTo(navController.previousBackStackEntry?.destination?.id ?: return@navigate)
+                    }
+                }
+            )
+        }
+
+        is Resource.Success -> {
+            val habit = (createHabitState as Resource.Success<Habit>).data
+            Toast.makeText(LocalContext.current, "Habit created succesfully!", Toast.LENGTH_SHORT).show()
+            navController.navigate(Screen.HomeScreen.route){
+                popUpTo(Screen.NewHabitScreen.route){
+                    inclusive = true
+                }
+            }
+            viewModel.createHabitSuccess()
+        }
+        is Resource.Initial -> {
+            NewHabitFields(
+                navController = navController,
+                viewModel = viewModel
+            )
+        }
+    }
+}
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun NewHabitScreen(
+fun NewHabitFields(
     navController: NavController,
+    viewModel: MainViewModel
 ) {
-    val viewModel = hiltViewModel<MainViewModel>()
     var habitName by remember { mutableStateOf("") }
 
     var showChooseReminderDialog by remember { mutableStateOf(false) }
     var showAddReminderDialog by remember { mutableStateOf(false) }
 
-    val reminderList = remember { mutableListOf("10:00 AM") }
+    var reminderTime by remember { mutableStateOf("10:00 AM") }
+    var isChecked by remember { mutableStateOf(false) }
+
+    val savedToken: String? by viewModel.readToken().collectAsState(initial = null)
 
     Box(
         modifier = Modifier
@@ -311,7 +365,7 @@ fun NewHabitScreen(
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Text(
-                        text = "10:00AM",
+                        text = reminderTime,
                         fontFamily = MANROPE_FONT_FAMILY,
                         fontSize = 16.sp,
                         fontWeight = FontWeight.Medium,
@@ -326,7 +380,6 @@ fun NewHabitScreen(
             }
             Spacer(modifier = Modifier.height(10.dp))
 
-            var isChecked by remember { mutableStateOf(false) }
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -423,7 +476,16 @@ fun NewHabitScreen(
                 modifier = Modifier
                     .align(Alignment.CenterHorizontally)
                     .clip(CircleShape)
-                    .clickable {  }
+                    .clickable {
+                        savedToken?.let {
+                            viewModel.createHabit(it, HabitRequest(
+                                habitName = habitName,
+                                frequency = "Daily",
+                                reminderTime = convertTo24HourFormat(reminderTime),
+                                notification = isChecked
+                            ))
+                        }
+                    }
             )
 
 
@@ -471,7 +533,7 @@ fun NewHabitScreen(
                     showAddReminderDialog = true
                 },
                 modifier = Modifier.align(Alignment.BottomCenter),
-                reminderList = reminderList
+                reminderTime = reminderTime
             )
         }
 
@@ -480,7 +542,7 @@ fun NewHabitScreen(
             AddReminderDialog(
                 onDismiss = { showAddReminderDialog = false },
                 onPositiveClick = { reminder ->
-                    reminderList.add(reminder)
+                    reminderTime = reminder
                     showAddReminderDialog = false
                     showChooseReminderDialog = true
                 },
@@ -489,5 +551,18 @@ fun NewHabitScreen(
         }
     }
 
+}
+
+fun convertTo24HourFormat(time: String): String {
+    // Define the input format
+    val inputFormatter = DateTimeFormatter.ofPattern("hh:mma", Locale.ENGLISH)
+    // Define the output format
+    val outputFormatter = DateTimeFormatter.ofPattern("HH:mm:ss")
+
+    // Parse the input time string
+    val parsedTime = LocalTime.parse(time, inputFormatter)
+
+    // Format the parsed time to the desired output format
+    return parsedTime.format(outputFormatter)
 }
 

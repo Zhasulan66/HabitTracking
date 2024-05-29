@@ -39,8 +39,7 @@ fun ErrorScreen(retryAction: () -> Unit, modifier: Modifier = Modifier) {
                 contentDescription = ""
             )
             Text(text = "loading failed", modifier = Modifier.padding(16.dp))
-            Button(onClick = retryAction,
-                modifier = Modifier.background(OrangeFD)) {
+            Button(onClick = retryAction) {
                 Text("retry")
             }
         }

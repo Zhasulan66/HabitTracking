@@ -163,4 +163,98 @@ class MainViewModel @Inject constructor(
             }
         }
     }
+
+    //habitListState
+    private val _habitListState = MutableStateFlow<Resource<List<Habit>>>(Resource.Initial)
+    val habitListState: StateFlow<Resource<List<Habit>>> = _habitListState.asStateFlow()
+
+    fun fetchAllHabit(){
+        viewModelScope.launch {
+            _habitListState.value = Resource.Loading
+            try {
+                val response = repository.getAllHabits()
+                _habitListState.value = Resource.Success(response)
+            } catch (e: Exception) {
+                _habitListState.value = Resource.Error(e)
+            }
+
+        }
+    }
+
+    //create habit
+    private val _createHabitState = MutableStateFlow<Resource<Habit>>(Resource.Initial)
+    val createHabitState: StateFlow<Resource<Habit>> = _createHabitState.asStateFlow()
+
+    fun createHabit(
+        token: String,
+        habitRequest: HabitRequest
+    ) {
+        viewModelScope.launch {
+            _createHabitState.value = Resource.Loading
+            try {
+                val habit = repository.createHabit("Token $token", habitRequest)
+                _createHabitState.value = Resource.Success(habit)
+            } catch (e: Exception) {
+                _createHabitState.value = Resource.Error(e)
+            }
+        }
+    }
+
+    fun createHabitSuccess() {
+        _createHabitState.value = Resource.Initial
+    }
+
+    //get habit by id
+    private val _habitInfoState = MutableStateFlow<Resource<Habit>>(Resource.Initial)
+    val habitInfoState: StateFlow<Resource<Habit>> = _habitInfoState.asStateFlow()
+
+    fun fetchHabitById(
+        id: Int
+    ) {
+        viewModelScope.launch {
+            _habitInfoState.value = Resource.Loading
+            try {
+                val habit = repository.getHabitById(id)
+                _habitInfoState.value = Resource.Success(habit)
+            } catch (e: Exception) {
+                _habitInfoState.value = Resource.Error(e)
+            }
+        }
+    }
+
+    //get analytics by id
+    private val _analyticsState = MutableStateFlow<Resource<Analytics>>(Resource.Initial)
+    val analyticsState: StateFlow<Resource<Analytics>> = _analyticsState.asStateFlow()
+
+    fun fetchAnalytics(
+        id: Int
+    ) {
+        viewModelScope.launch {
+            _analyticsState.value = Resource.Loading
+            try {
+                val analytics = repository.getAnalytics(id)
+                _analyticsState.value = Resource.Success(analytics)
+            } catch (e: Exception) {
+                _analyticsState.value = Resource.Error(e)
+            }
+        }
+    }
+
+    //get all habit entries
+    private val _habitEntriesState = MutableStateFlow<Resource<List<HabitEntry>>>(Resource.Initial)
+    val habitEntriesState: StateFlow<Resource<List<HabitEntry>>> = _habitEntriesState.asStateFlow()
+
+    fun fetchAllHabitEntries() {
+        viewModelScope.launch {
+            _habitEntriesState.value = Resource.Loading
+            try {
+                val habitEntries = repository.getAllHabitEntries()
+                _habitEntriesState.value = Resource.Success(habitEntries)
+            } catch (e: Exception) {
+                _habitEntriesState.value = Resource.Error(e)
+            }
+        }
+    }
+
+
 }
